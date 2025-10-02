@@ -1,0 +1,139 @@
+/* ========= GLOBAL RESET ========= */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* ========= ROOT VARIABLES ========= */
+:root {
+  --font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-size-base: 16px;
+  --font-color: #333;
+  --bg-color: #f9f9fb;
+  --accent-color: #0077cc;
+  --accent-hover: #005fa3;
+  --border-radius: 8px;
+  --transition-speed: 0.2s;
+}
+
+/* ========= BODY & TYPOGRAPHY ========= */
+body {
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  line-height: 1.6;
+  color: var(--font-color);
+  background-color: var(--bg-color);
+}
+
+/* Headings */
+h1, h2, h3, h4, h5, h6 {
+  margin-bottom: 0.75rem;
+  font-weight: 600;
+  line-height: 1.2;
+  color: #111;
+}
+
+/* Paragraphs */
+p {
+  margin-bottom: 1rem;
+  max-width: 70ch;
+}
+
+/* ========= LINKS & BUTTONS ========= */
+a {
+  color: var(--accent-color);
+  text-decoration: none;
+  transition: color var(--transition-speed);
+}
+
+a:hover {
+  color: var(--accent-hover);
+}
+
+/* Buttons */
+button {
+  background: var(--accent-color);
+  color: white;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: var(--border-radius);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background var(--transition-speed);
+}
+
+button:hover {
+  background: var(--accent-hover);
+}
+
+/* Welcome paragraph / hero intro */
+#welcome {
+  max-width: 800px;                 /* keep lines readable */
+  margin: 2rem auto;                 /* center it with spacing */
+  padding: 1.5rem 2rem;
+  font-size: 1.1rem;                 /* slightly larger than body */
+  line-height: 1.8;                  /* easy reading */
+  color: var(--font-color, #333);    /* use your global text color */
+  text-align: center;                /* center-align for a hero feel */
+
+  background: #fff;                  /* card-like style */
+  border-radius: var(--border-radius, 8px);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+/* Optional: highlight key words */
+#welcome strong {
+  color: var(--accent-color, #0077cc);
+}
+
+/* ========= LAYOUT UTILITIES ========= */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.section {
+  padding: 3rem 1rem;
+}
+
+/* ========= CARDS ========= */
+.card {
+  background: white;
+  border-radius: var(--border-radius);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  padding: 1.5rem;
+  margin: 1rem 0;
+  transition: transform var(--transition-speed),
+              box-shadow var(--transition-speed);
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.12);
+}
+
+/* ========= FORMS ========= */
+input, textarea, select {
+  width: 100%;
+  padding: 0.6rem;
+  margin: 0.5rem 0 1rem 0;
+  border: 1px solid #ccc;
+  border-radius: var(--border-radius);
+  font-size: 1rem;
+}
+
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 2px rgba(0,119,204,0.2);
+}
+
+/* ========= FOOTER ========= */
+footer {
+  text-align: center;
+  padding: 2rem 1rem;
+  font-size: 0.9rem;
+  color: #666;
+}

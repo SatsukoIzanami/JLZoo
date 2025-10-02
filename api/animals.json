@@ -1,0 +1,74 @@
+[
+  {
+    "type": "Mammal",
+    "name": "Monkey",
+    "conservationStatus": "No Concern",
+    "habitat": "Forest",
+    "description": "Monkeys live in tropical forests, mountains and even in snowy habitats!",
+    "image": "images/monkey.png",
+    "funFact": "These guys are primates that can swing through the trees!"
+  },
+  {
+    "type": "Mammal",
+    "name": "Buffalo",
+    "conservationStatus": "No Concern",
+    "habitat": "Plains",
+    "description": "Buffalos are large mammals that live in herds.",
+    "image": "images/buffalo.png",
+    "funFact": "These guys can be black, brown, gray, red or white!"
+  },
+  {
+    "type": "Mammal",
+    "name": "Fox",
+    "conservationStatus": "No Concern",
+    "habitat": "Forest",
+    "description": "A fox is a smaller mammal with unique characteristics.",
+    "image": "images/fox.png",
+    "funFact": "These guys are part of the dog family! However, they use their thick tails to help them balance just like cats!"
+  },
+  {
+    "type": "Bird",
+    "name": "Flamingo",
+    "conservationStatus": "No Concern",
+    "habitat": "Wetlands",
+    "description": "Flamingos are a type of wading bird.",
+    "image": "images/flamingo.png",
+    "funFact": "These guys have relatively small feet compared to their long legs. They also build volcano-shaped mud nests!"
+  },
+  {
+    "type": "Mammal",
+    "name": "Lion",
+    "conservationStatus": "No Concern",
+    "habitat": "Savanna",
+    "description": "Lions are large cats. Males are bigger than females and have a thick mane.",
+    "image": "images/lion.png",
+    "funFact": "These guys are social creatures. They live in groups called prides that are made up of a few adult males, related females, and cubs."
+  },
+  {
+    "type": "Mammal",
+    "name": "Proboscis Monkey",
+    "conservationStatus": "Endangered",
+    "habitat": "Rainforest",
+    "description": "This endangered species is struggling due to the loss of their natural habitat",
+    "image": "images/pmonkey.png",
+    "funFact": "A male of this species is blessed with a massive floppy schnozz which drives the females wild with lust!"
+  },
+  {
+    "type": "Bird",
+    "name": "Kakapo",
+    "conservationStatus": "Endangered",
+    "habitat": "Forest",
+    "description": "This endangered animal is facing extinction due to hunting, new predators and land clearance.",
+    "image": "images/kakapos.png",
+    "funFact": "These guys are the world's only flightless parrot!"
+  },
+  {
+    "type": "Mammal",
+    "name": "Lemur",
+    "conservationStatus": "Endangered",
+    "habitat": "Forest/Rainforest",
+    "description": "Ninety-six percent of the 107 lemur species in Madagascar are facing extinction due to habitat loss and hunting for the pet trade.",
+    "image": "images/lemur.png",
+    "funFact": "These guys are native only to Madagascar! They're also the oldest living primates in the world with their origins dating back over 70 million years!"
+  }
+]
