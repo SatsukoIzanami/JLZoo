@@ -1,4 +1,5 @@
 // components/animals/animal-exhibit.js
+import { API_BASE } from '../config.js';
 
 class   AnimalExhibit extends HTMLElement {
     constructor() {
@@ -268,8 +269,8 @@ class   AnimalExhibit extends HTMLElement {
     // data load
     async _loadAnimals() {
         try {
-            const response = await fetch('http://localhost:2000/animals');
-            if (!response.ok) throw new Error('Fetch failed');
+            const response = await fetch(`${API_BASE}/animals`, { cache: 'no-store' });
+            if (!response.ok) throw new Error(`Fetch failed: ${res.status}`);
             const data = await response.json();
             this.zooAnimals = Array.isArray(data.animals) ? data.animals : data;
             this._populateDropdown();
@@ -471,13 +472,13 @@ class   AnimalExhibit extends HTMLElement {
     }
 
     _wireEvents() {
-        this.selectedAnimalDropdown.addEventListener('change', () => {
+        this.selectedAnimalDropdown.addEventListener('change', async () => {
             const selected = this.zooAnimals.find(a => a.name === this.selectedAnimalDropdown.value);
             if (selected) this._renderCard(selected);
         });
 
         // Search across name, type, class, species, habitat, status, description
-        this.searchQueryInput.addEventListener('input', () => {
+        this.searchQueryInput.addEventListener('input', async () => {
         const q = (this.searchQueryInput.value || '').trim().toLowerCase();
         this.searchResultsList.innerHTML = '';
 
@@ -512,7 +513,7 @@ class   AnimalExhibit extends HTMLElement {
         }
         });
 
-        this.addAnimalForm.addEventListener('submit', (e) => {
+        this.addAnimalForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             if (!this._validateForm()) return;
 
@@ -527,14 +528,27 @@ class   AnimalExhibit extends HTMLElement {
                 funFact: formData.get('more'),
             };
 
-            this.zooAnimals.push(newAnimal);
-            this._populateDropdown();
-            this.formMessage.textContent = 'Animal Added!';
-            setTimeout(() => this.formMessage.textContent = '', 2000);
-            this.addAnimalForm.reset();
-            ['species','class','conservationStatus','habitat','img','description','more'].forEach(n => this._setError(n, ''));
-            this.formMessage.textContent = 'Animal added!';
-            setTimeout(() => (this.formMessage.textContent = ''), 4000);
+            try {
+                const res = await fetch(`${API_BASE}/animals`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(newAnimal),
+                });
+                if (!res.ok) throw new Error(`Create failed: ${res.status}`);
+                const saved = await res.json();
+
+                this.zooAnimals.push(saved);
+                this._populateDropdown();
+
+                this.formMessage.textContent = 'Animal added!';
+                this.addAnimalForm.reset();
+                ['species','class','conservationStatus','habitat','img','description','more']
+                    .forEach(n => this._setError(n, ''));
+                setTimeout(() => (this.formMessage.textContent = ''), 4000);
+            } catch (err) {
+                console.error(err);
+                this.formMessage.textContent = 'Error: could not save animal.';
+            }
         });
     }
 
@@ -560,7 +574,7 @@ class   AnimalExhibit extends HTMLElement {
         const habitatEl = document.createElement('p');
         habitatEl.textContent = `Habitat: ${animal.habitat}`;
 
-        const descEl = document.createTextNode('p');
+        const descEl = document.createElement('p');
         descEl.textContent = animal.description || '';
 
         const adoptBtn = this._createButton('Adopt', 'primary');
@@ -569,7 +583,6 @@ class   AnimalExhibit extends HTMLElement {
             this._renderAdoptedList();
         });
 
-        card.append(img, nameEl, typeEl, statusEl, habitatEl, descEl);
         card.append(img, nameEl, typeEl, statusEl, habitatEl, descEl, adoptBtn);
         this.animalCardContainer.appendChild(card);
     }

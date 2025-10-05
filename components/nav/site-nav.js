@@ -70,7 +70,7 @@ class SiteNav extends HTMLElement {
         };
 
         links.append(
-            mkLink('Home', 'home.html'),
+            mkLink('Home', 'index.html'),
             mkLink('About', 'about.html'),
             mkLink('Contact', 'contact.html')
         );

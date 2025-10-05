@@ -9,11 +9,17 @@ const fsp = fs.promises;
 const path = require('path');
 const { randomUUID } = require('crypto');
 
-const PORT = 2000;
+const PORT = process.env.PORT || 3000;
 const DATA_FILE = path.join(__dirname, 'animals.json');
 
 const app = express();
-app.use(cors());
+
+const allowed = [
+  'https://satsukoizanami.github.io',
+  'https://satsukoizanami.github.io/JLZoo'
+];
+app.use(cors({ origin: allowed }));
+
 app.use(express.json({ limit: '1mb '}));
 
 // load animals from animals.json and return array
@@ -44,7 +50,7 @@ function validateAnimal(payload, { partial = false } = {}) {
         }
     } else {
         // for partial updates/prenancy
-        for (cont [k, v] of Object.entries(payload || {})) {
+        for (const [k, v] of Object.entries(payload || {})) {
             if (k === 'pregnant') {
                 if (typeof v !== 'boolean') return `"pregnant" must be boolean.`;
             } else if (typeof v !== 'string') {
@@ -56,7 +62,7 @@ function validateAnimal(payload, { partial = false } = {}) {
 }
 
 // GET /animals
-app.get('/animals', async (request, result) => {
+app.get('/api/animals', async (request, result) => {
     try {
         const animals = await loadAnimals();
         result.json(animals);
@@ -67,7 +73,7 @@ app.get('/animals', async (request, result) => {
 });
 
 // GET /animals/:id
-app.get('/animals/:id', async (request, result) => {
+app.get('/api/animals/:id', async (request, result) => {
     try {
         const animals = await loadAnimals();
         const found = animals.find(a => a.id === request.params.id);
@@ -80,7 +86,7 @@ app.get('/animals/:id', async (request, result) => {
 });
 
 // POST /animals
-app.post('/animals', async (request, result) => {
+app.post('/api/animals', async (request, result) => {
     try {
         const error = validateAnimal(request.body);
         if (error) return result.status(400).json({ error });
@@ -107,7 +113,7 @@ app.post('/animals', async (request, result) => {
 });
 
 // PUT /animals/:id
-app.put('/animals/:id', async (request, result) => {
+app.put('/api/animals/:id', async (request, result) => {
     try {
         const error = validateAnimal(request.body);
         if (error) return result.status(400).json({ error });
@@ -138,7 +144,7 @@ app.put('/animals/:id', async (request, result) => {
 });
 
 // PATCH /animals/:id
-app.patch('/animals/:id', async (request, result) => {
+app.patch('/api/animals/:id', async (request, result) => {
     try {
         const error = validateAnimal(request.body, { partial: true });
         if (error) return result.status(400).json({ error });
@@ -159,7 +165,7 @@ app.patch('/animals/:id', async (request, result) => {
 });
 
 // DELETE /animals/:id
-app.delete('/animals/:id', async (request, result) => {
+app.delete('/api/animals/:id', async (request, result) => {
     try {
         const animals = await loadAnimals();
         const idx = animals.findIndex(a => a.id === request.params.id);
@@ -175,5 +181,5 @@ app.delete('/animals/:id', async (request, result) => {
 });
 
 app.listen(PORT, () => {
-    console.log(`Zoo API listening on http://localhost:${PORT}`);
+    console.log(`Zoo API listening on :${PORT}`);
 });
