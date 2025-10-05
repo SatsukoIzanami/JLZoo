@@ -14,7 +14,6 @@ const DATA_FILE = path.join(__dirname, 'animals.json');
 
 const app = express();
 
-const cors = require('cors');
 const allowed = [
   'https://satsukoizanami.github.io',
   'https://satsukoizanami.github.io/JLZoo'
@@ -193,4 +192,5 @@ app.delete('/api/animals/:id', async (request, result) => {
 
 app.listen(PORT, () => {
     console.log(`Zoo API listening on :${PORT}`);
+
 });
