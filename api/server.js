@@ -21,7 +21,7 @@ const allowed = [
 ];
 app.use(cors({ origin: allowed }));
 
-app.use(express.json({ limit: '1mb '}));
+app.use(express.json({ limit: '2mb '}));
 
 // load animals from animals.json and return array
 async function loadAnimals() {
@@ -185,3 +185,4 @@ app.listen(PORT, () => {
     console.log(`Zoo API listening on :${PORT}`);
 
 });
+
