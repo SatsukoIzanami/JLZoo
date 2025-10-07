@@ -20,7 +20,8 @@ const allowed = [
 ];
 app.use(cors({ origin: allowed }));
 
-app.use(express.json({ limit: '2mb '}));
+app.use(express.json({ limit: '4mb '}));
+api.use(express.urlencoded({ extended: true, limit: '4mb' }));
 
 app.use((req, _res, next) => {
   console.log('req method:', req.method,
@@ -192,5 +193,4 @@ app.delete('/api/animals/:id', async (request, result) => {
 
 app.listen(PORT, () => {
     console.log(`Zoo API listening on :${PORT}`);
-
 });
