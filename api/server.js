@@ -20,18 +20,15 @@ const allowed = [
 ];
 app.use(cors({ origin: allowed }));
 
-app.use(express.json({ limit: '4mb '}));
-app.use(express.urlencoded({ extended: true, limit: '4mb' }));
+app.use(express.json({ limit: '4mb', type: 'application/json'}));
+app.use(express.urlencoded({ extended: true, limit: '4mb', type: 'application/x-www-form-urlencoded' }));
 
-app.use((req, _res, next) => {
-  console.log('req method:', req.method,
-              'content-type:', req.headers['content-type'],
-              'content-length:', req.headers['content-length']);
-  next();
+app.use((err, req, res, next) => {
+  if (err && err.type === 'entity.too.large') {
+    return res.status(413).json({ error: 'Payload too large' });
+  }
+  next(err);
 });
-
-
-app.use(express.urlencoded({ extended: true, limit: '2mb' }));
 
 // load animals from animals.json and return array
 async function loadAnimals() {
