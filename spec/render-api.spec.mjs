@@ -2,6 +2,11 @@ import request from "supertest";
 
 const BASE_URL = "https://jlzoo.onrender.com"; // replace with your real Render URL
 
+// note about Render free tier!!!
+console.log("**PLEASE NOTE**: Render free instances spin down with inactivity and may take ~45s to wake if idle." +
+    " If the first test times out, please re-run after the instance is awake!"
+);
+
 describe("Deployed Zoo API on Render", () => {
   it("GET /api/animals should return a valid array of animal objects", async () => {
     const res = await request(BASE_URL).get("/api/animals");
