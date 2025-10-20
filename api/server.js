@@ -2,12 +2,15 @@
 
 //Express REST API for zoo animals
 
-const express = require('express');
-const cors = require('cors');
-const fs = require('fs');
-const fsp = fs.promises;
-const path = require('path');
-const { randomUUID } = require('crypto');
+import express from 'express';
+import cors from 'cors';
+import fs from 'fs';
+import { promises as fsp } from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const PORT = process.env.PORT || 3000;
 const DATA_FILE = path.join(__dirname, 'animals.json');
@@ -30,14 +33,15 @@ app.use((err, req, res, next) => {
   next(err);
 });
 
+if (process.env.NODE_ENV !== 'test') {
+    app.listen(PORT, () => console.log(`Zoo API running on port ${PORT}`));
+}
+
 // load animals from animals.json and return array
 async function loadAnimals() {
     const raw = await fsp.readFile(DATA_FILE, 'utf8');
     const parsed = JSON.parse(raw);
     const arr = Array.isArray(parsed) ? parsed : Array.isArray(parsed.animals) ? parsed.animals : [];
-
-    // animal id?
-    for (const a of arr) if (!a.id) a.id = randomUUID();
     return arr;
 }
 
@@ -76,15 +80,15 @@ app.get('/api/animals', async (request, result) => {
         result.json(animals);
     } catch (err) {
         console.error(err);
-        result.status(500).json({ error: 'Failed to read animals.' });
+        result.status(500).json({ error: 'Failed to load animals.' });
     }
 });
 
-// GET /animals/:id
-app.get('/api/animals/:id', async (request, result) => {
+// GET /animals/:name
+app.get('/api/animals/:name', async (request, result) => {
     try {
         const animals = await loadAnimals();
-        const found = animals.find(a => a.id === request.params.id);
+        const found = animals.find(a => a.name.toLowerCase() === request.params.name.toLowerCase());
         if (!found) return result.status(404).json({ error: 'Animal not found.' });
         result.json(found);
     } catch (err) {
@@ -100,8 +104,10 @@ app.post('/api/animals', async (request, result) => {
         if (error) return result.status(400).json({ error });
 
         const animals = await loadAnimals();
+        const exists = animals.some(a => a.name.toLowerCase() === req.body.name.toLowerCase());
+        if (exists) return res.status(409).json({ error: 'Animal already exists.' });
+        
         const newAnimal = {
-            id: randomUUID(),
             name: request.body.name.trim(),
             type: request.body.type.trim(),
             conservationStatus: request.body.conservationStatus.trim(),
@@ -120,14 +126,14 @@ app.post('/api/animals', async (request, result) => {
     }
 });
 
-// PUT /animals/:id
-app.put('/api/animals/:id', async (request, result) => {
+// PUT /animals/:name
+app.put('/api/animals/:name', async (request, result) => {
     try {
         const error = validateAnimal(request.body);
         if (error) return result.status(400).json({ error });
 
         const animals = await loadAnimals();
-        const idx = animals.findIndex(a => a.id === request.params.id);
+        const idx = animals.findIndex(a => a.name.toLowerCase() === request.params.name.toLowerCase());
         if (idx === -1) return result.status(404).json({ error: 'Animal not found.' });
 
         const updated = {
@@ -151,14 +157,14 @@ app.put('/api/animals/:id', async (request, result) => {
     }
 });
 
-// PATCH /animals/:id
-app.patch('/api/animals/:id', async (request, result) => {
+// PATCH /animals/:name
+app.patch('/api/animals/:name', async (request, result) => {
     try {
         const error = validateAnimal(request.body, { partial: true });
         if (error) return result.status(400).json({ error });
 
         const animals = await loadAnimals();
-        const idx = animals.findIndex(a => a.id === request.params.id);
+        const idx = animals.findIndex(a => a.name.toLowerCase() === request.params.name.toLowerCase());
         if (idx === -1) return result.status(404).json({ error: 'Animal not found.' });
 
         const current = animals[idx];
@@ -172,11 +178,11 @@ app.patch('/api/animals/:id', async (request, result) => {
     }
 });
 
-// DELETE /animals/:id
-app.delete('/api/animals/:id', async (request, result) => {
+// DELETE /animals/:name
+app.delete('/api/animals/:name', async (request, result) => {
     try {
         const animals = await loadAnimals();
-        const idx = animals.findIndex(a => a.id === request.params.id);
+        const idx = animals.findIndex(a => a.name.toLowerCase() === request.params.name.toLowerCase());
         if (idx === -1) return result.status(404).json({ error: 'Animal not found.'});
 
         const removed = animals.splice(idx, 1)[0];
@@ -188,6 +194,4 @@ app.delete('/api/animals/:id', async (request, result) => {
     }
 });
 
-app.listen(PORT, () => {
-    console.log(`Zoo API listening on :${PORT}`);
-});
+export default app;
