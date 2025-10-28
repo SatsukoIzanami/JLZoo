@@ -5,7 +5,7 @@ import { defineConfig } from 'vite';
 const isGitHubPages = process.env.GITHUB_PAGES === 'true';
 
 export default defineConfig({
-    base: isGitHubPages ? '/JLZoo/' : '/',   //root locally, subpath on GH Pages
+    base: '/JLZoo/',
     root: '.',
     server: {
         port: 5173,
