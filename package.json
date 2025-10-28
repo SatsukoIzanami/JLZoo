@@ -1,0 +1,31 @@
+{
+  "name": "zoo-api",
+  "version": "1.0.0",
+  "description": "REST API for JL Zoo",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "start": "node api/server.js",
+    "test": "jasmine",
+    "test:local": "cross-env NODE_ENV=test jasmine spec/local-api.spec.mjs",
+    "test:render": "cross-env NODE_ENV=test jasmine spec/render-api.spec.mjs",
+    "deploy": "gh-pages -d dist"
+  },
+  "author": "Jessica Lecker",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "jasmine": "^5.12.0"
+  },
+  "devDependencies": {
+    "cross-env": "^10.1.0",
+    "gh-pages": "^6.3.0",
+    "nodemon": "^3.1.10",
+    "supertest": "^7.1.4",
+    "vite": "^7.1.12"
+  }
+}
