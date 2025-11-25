@@ -556,7 +556,7 @@ class   AnimalExhibit extends HTMLElement {
 
     // helpers for adoption modal and validation
     _openPhoneModal(animal) {
-        console.log('Opening adoption modal for:', animal?.name); //temp log for debugging
+        console.log('Opening adoption modal for:', animal?.name); //temp log for debugging modal issues
         this.pendingAdoption = animal;
         if (this.phoneInput) {
             this.phoneInput.value = '';
