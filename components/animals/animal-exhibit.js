@@ -1,7 +1,7 @@
 // components/animals/animal-exhibit.js
 import { API_BASE } from '../config.js';
 
-class   AnimalExhibit extends HTMLElement {
+class AnimalExhibit extends HTMLElement {
     constructor() {
         super();
         this.attachShadow({mode: 'open'});
@@ -331,6 +331,12 @@ class   AnimalExhibit extends HTMLElement {
     }
 
     // utilities
+    _clearNode(node) {
+        while (node.firstChild) {
+            node.removeChild(node.firstChild);
+        }
+    }
+
     _createPanel(titleText) {
         const panel = document.createElement('section');
         panel.className = 'panel';
@@ -400,7 +406,7 @@ class   AnimalExhibit extends HTMLElement {
     }
 
     _populateDropdown() {
-        this.selectedAnimalDropdown.innerHTML = '';
+        this._clearNode(this.selectedAnimalDropdown);
         const placeholder = document.createElement('option');
         placeholder.value = '';
         placeholder.textContent = '- Select an Animal -';
@@ -584,18 +590,61 @@ class   AnimalExhibit extends HTMLElement {
 
         const rawNumber = (this.phoneInput?.value || '').trim();
 
-        // standard 10 digit phone regex w/ optional +1
-        const phonePattern = /^(?:\+1[.\-\s]?)?\(?(?:[2-9][0-9]{2})\)?[.\-\s]?(?:[2-9][0-9]{2})[.\-\s]?[0-9]{4}$/;
-
-
-
-        if (!rawNumber || !phonePattern.test(rawNumber)) {
+        // quick format check: optional +1, then 10 digits with common separators
+        const basicPattern = /^\s*(?:\+?1[.\-\s]?)?(?:\(?\d{3}\)?[.\-\s]?\d{3}[.\-\s]?\d{4})\s*$/;
+        if (!basicPattern.test(rawNumber)) {
             this.phoneError.textContent = 'Please enter a valid phone number (10 digits).';
             this.phoneInput?.focus();
             return;
         }
 
-        // on success, record atoption and phone number
+        // strip to digits and apply stricter numeric rules
+        let digits = rawNumber.replace(/\D/g, '');
+
+        // allow leading 1 (country code) but remove it for validation
+        if (digits.length === 11 && digits.startsWith('1')) {
+            digits = digits.slice(1);
+        }
+
+        if (digits.length !== 10) {
+            this.phoneError.textContent = 'Phone number must have exactly 10 digits.';
+            this.phoneInput?.focus();
+            return;
+        }
+
+        const area = digits.slice(0, 3);
+        const exchange = digits.slice(3, 6);
+        const line = digits.slice(6);
+
+        // area code: first digit 2–9
+        if (area[0] < '2' || area[0] > '9') {
+            this.phoneError.textContent = 'Area code must start with digits 2–9.';
+            this.phoneInput?.focus();
+            return;
+        }
+
+        // exchange: first digit 2–9
+        if (exchange[0] < '2' || exchange[0] > '9') {
+            this.phoneError.textContent = 'Phone number prefix must start with digits 2–9.';
+            this.phoneInput?.focus();
+            return;
+        }
+
+        // disallow obviously fake combos
+        if (exchange === '000' || line === '0000') {
+            this.phoneError.textContent = 'Please enter a realistic phone number, not all zeros.';
+            this.phoneInput?.focus();
+            return;
+        }
+
+        // disallow numbers where all 10 digits are the same
+        if (/^(\d)\1{9}$/.test(digits)) {
+            this.phoneError.textContent = 'Please enter a realistic phone number.';
+            this.phoneInput?.focus();
+            return;
+        }
+        
+        // on success, record adoption and phone number
         this.adoptedAnimals.add(this.pendingAdoption.name);
         if (this.adoptionContacts) {
             this.adoptionContacts.set(this.pendingAdoption.name, rawNumber);
@@ -604,8 +653,9 @@ class   AnimalExhibit extends HTMLElement {
         this._closePhoneModal();
     }
 
+
     _renderAdoptedList() {
-        this.adoptedAnimalsList.innerHTML = '';
+        this._clearNode(this.adoptedAnimalsList);
 
         if (!this.adoptedAnimals || this.adoptedAnimals.size === 0) {
             const li = document.createElement('li');
@@ -661,7 +711,7 @@ class   AnimalExhibit extends HTMLElement {
         // Search across name, type, class, species, habitat, status, description
         this.searchQueryInput.addEventListener('input', async () => {
         const q = (this.searchQueryInput.value || '').trim().toLowerCase();
-        this.searchResultsList.innerHTML = '';
+        this._clearNode(this.searchResultsList);
 
         // If empty query, bail gracefully (keeps list cleared)
         if (!q) return;
@@ -739,7 +789,7 @@ class   AnimalExhibit extends HTMLElement {
     }
 
     _renderCard(animal) {
-        this.animalCardContainer.innerHTML = '';
+        this._clearNode(this.animalCardContainer);
 
         const card = document.createElement('div');
         card.className = 'animal-card';
