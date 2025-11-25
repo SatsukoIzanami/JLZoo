@@ -585,7 +585,8 @@ class   AnimalExhibit extends HTMLElement {
         const rawNumber = (this.phoneInput?.value || '').trim();
 
         // standard 10 digit phone regex w/ optional +1
-        const phonePattern = /^(?:\+1[-.\s]?)?(?:\(?\d{3}\)?[-.\s]?)\d{3}[-.\s]?\d{4}$/;
+        const phonePattern = /^(?:\+1[-.\s]?)?\(?[2-9]\d{2}\)?[-.\s]?\d{3}[-.\s]?\d{4}$/;
+
 
         if (!rawNumber || !phonePattern.test(rawNumber)) {
             this.phoneError.textContent = 'Please enter a valid phone number (10 digits).';
