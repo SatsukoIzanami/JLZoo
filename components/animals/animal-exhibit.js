@@ -119,6 +119,61 @@ class   AnimalExhibit extends HTMLElement {
         this.adoptedAnimalsList.className = 'adopted-list';
         adoptedPanel.append(this.adoptedAnimalsList);
 
+        // track phone number and modal state for adoption
+        this.adoptionContacts = new Map();
+        this.pendingAdoption = null;
+
+        // phone number modal - element creation
+        this.phoneModal = document.createElement('div');
+        this.phoneModal.className = 'modal';
+
+        
+        const modalDialog = document.createElement('div');
+        modalDialog.className = 'modal-dialog';
+
+        const modalTitle = document.createElement('h3');
+        modalTitle.textContent = 'Adopt this animal!';
+
+        const modalText = document.createElement('p');
+        modalText.textContent = 'Enter a phone number so we can notify you about your adopted animal.';
+
+        this.phoneForm = document.createElement('form');
+
+        this.phoneInput = document.createElement('input');
+        this.phoneInput.type = 'tel';
+        this.phoneInput.name = 'phone';
+        this.phoneInput.required = true;
+        this.phoneInput.placeholder = 'ie. 715-555-1234';
+        this.phoneInput.setAttribute('autocomplete', 'tel');
+
+        this.phoneError = document.createElement('div');
+        this.phoneError.className = 'modal-error';
+        this.phoneError.setAttribute = ('aria-live', 'polite');
+
+        const actions = document.createElement('div');
+        actions.className = 'modal-actions';
+
+        const cancelBtn = this._createButton('Cancel', 'ghost');
+        cancelBtn.type = 'button';
+
+        const okBtn = this._createButton('Confirm Adoption', 'primary');
+        okBtn.type = 'submit';
+
+        // append modal elements
+        actions.append(cancelBtn, okBtn);
+        this.phoneForm.append(this.phoneInput, this.phoneError, actions);
+
+        modalDialog.append(modalTitle, modalText, this.phoneForm);
+        this.phoneModal.appendChild(modalDialog);
+
+        // close modal on cancel button click
+        cancelBtn.addEventListener('click', () => this._closePhoneModal());
+
+        // clear error while typing
+        this.phoneInput.addEventListener('input', () => {
+            this.phoneError.textContent = '';
+        });
+
         // put panels together
         wrapper.append(browsePanel, searchPanel, addPanel, adoptedPanel);
 
@@ -206,9 +261,68 @@ class   AnimalExhibit extends HTMLElement {
             border-color: #b23a3a;
             outline: none;
             }
+                .adopt-info {
+            flex: 1 1 auto;
+            display: flex;
+            flex-direction: column;
+        }
+        .adopt-phone {
+            font-size: 11px;
+            opacity: 0.8;
+        }
+
+        .modal {
+            position: fixed;
+            inset: 0;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0,0,0,0.6);
+            z-index: 1000;
+        }
+        .modal.open {
+            display: flex;
+        }
+        .modal-dialog {
+            background: #101820;
+            padding: 16px 20px;
+            border-radius: 12px;
+            max-width: 340px;
+            width: 90%;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+        }
+        .modal-dialog h3 {
+            margin-top: 0;
+            margin-bottom: 0.5rem;
+        }
+        .modal-dialog p {
+            margin-top: 0;
+            margin-bottom: 0.75rem;
+            font-size: 0.9rem;
+        }
+        .modal-dialog input[type="tel"] {
+            width: 100%;
+            padding: 8px 10px;
+            border-radius: 10px;
+            border: 1px solid var(--border, #1a2440);
+            background: #0b1223;
+            color: inherit;
+        }
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            margin-top: 12px;
+        }
+        .modal-error {
+            color: #ffb4a3;
+            font-size: 12px;
+            margin-top: 4px;
+            min-height: 1.2em;
+        }
         `;
 
-    this.shadowRoot.append(style, wrapper);
+    this.shadowRoot.append(style, wrapper, this.phoneModal);
     }
 
     connectedCallback() {
@@ -431,13 +545,60 @@ class   AnimalExhibit extends HTMLElement {
         controls.forEach(ctrl => {
             ctrl.addEventListener('blur', () => this._validateField(ctrl.name));
             ctrl.addEventListener('input', () => {
-            // Clear the error as soon as it becomes valid
-            if (ctrl.checkValidity()) this._setError(ctrl.name, '');
+                // Clear the error as soon as it becomes valid
+                if (ctrl.checkValidity()) this._setError(ctrl.name, '');
             });
             if (ctrl.tagName.toLowerCase() === 'select') {
-            ctrl.addEventListener('change', () => this._validateField(ctrl.name));
+                ctrl.addEventListener('change', () => this._validateField(ctrl.name));
             }
         });
+    }
+
+    // helpers for adoption modal and validation
+    _openPhoneModal(animal) {
+        this.pendingAdoption = animal;
+        if (this.phoneInput) {
+            this.phoneInput.value = '';
+            this.phoneError.textContent = '';
+            setTimeout(() => this.phoneInput.focus(), 0);
+        }
+        if (this.phoneModal) {
+            this.phoneModal.classList.add('open');
+        }
+    }
+
+    _closePhoneModal() {
+        if (this.phoneModal) {
+            this.phoneModal.classList.remove('open');
+        }
+        this.pendingAdoption = null;
+    }
+
+    _handlePhoneSubmit(e) {
+        e.preventDefault();
+        if (!this.pendingAdoption) {
+            this._closePhoneModal();
+            return;
+        }
+
+        const rawNumber = (this.phoneInput?.value || '').trim();
+
+        // standard 10 digit phone regex w/ optional +1
+        const phonePattern = /^(?:\+1[-.\s]?)?(?:\(?\d{3}\)?[-.\s]?)\d{3}[-.\s]?\d{4}$/;
+
+        if (!rawNumber || !phonePattern.test(rawaNumber)) {
+            this.phoneError.textContent = 'Please enter a valid phone number (10 digits).';
+            this.phoneInput?.focus();
+            return;
+        }
+
+        // on success, record atoption and phone number
+        this.adoptedAnimals.add(this.pendingAdoption.name);
+        if (this.adoptionContacts) {
+            this.adoptionContacts.set(this.pendingAdoption.name, rawNumber);
+        }
+        this._renderAdoptedList();
+        this._closePhoneModal();
     }
 
     _renderAdoptedList() {
@@ -454,8 +615,19 @@ class   AnimalExhibit extends HTMLElement {
         for (const name of this.adoptedAnimals) {
             const li = document.createElement('li');
 
+            const info = document.createElement('div');
+            info.className = 'adopt-info';
+
             const label = document.createElement('span');
             label.textContent = name;
+
+            const phone = this.adoptionContacts?.get(name);
+            const phoneEl = document.createElement('span');
+            phoneEl.className = 'adopt-phone';
+            phoneEl.textContent = phone ? `Phone: ${phone}` : '';
+
+            info.append(label);
+            if (phone) info.append(phoneEl);
 
             const btn = document.createElement('button');
             btn.type = 'button';
@@ -472,6 +644,7 @@ class   AnimalExhibit extends HTMLElement {
     _unadopt(aName) {
         if (!aName) return;
         if (this.adoptedAnimals?.delete(aName)) {
+            this.adoptionContacts?.delete(aName);
             this._renderAdoptedList();   // redraw the list
         }
     }
@@ -555,6 +728,11 @@ class   AnimalExhibit extends HTMLElement {
                 this.formMessage.textContent = 'Error: could not save animal.';
             }
         });
+
+        // phone form submit for adoptions
+        if (this.phoneForm) {
+            this.phoneForm.addEventListener('submit', (e) => this._handlePhoneSubmit(e));
+        }
     }
 
     _renderCard(animal) {
@@ -584,8 +762,7 @@ class   AnimalExhibit extends HTMLElement {
 
         const adoptBtn = this._createButton('Adopt', 'primary');
         adoptBtn.addEventListener('click', () => {
-            this.adoptedAnimals.add(animal.name);
-            this._renderAdoptedList();
+            this._openPhoneModal(animal);
         });
 
         card.append(img, nameEl, typeEl, statusEl, habitatEl, descEl, adoptBtn);
