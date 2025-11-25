@@ -9,6 +9,10 @@ class   AnimalExhibit extends HTMLElement {
         // internal state
         this.zooAnimals = [];
         this.adoptedAnimals = new Set();
+
+        // track phone number and modal state for adoption
+        this.adoptionContacts = new Map(); // animal name to phone
+        this.pendingAdoption = null;
         
         // root container
         const wrapper = document.createElement('div');
@@ -119,10 +123,6 @@ class   AnimalExhibit extends HTMLElement {
         this.adoptedAnimalsList.className = 'adopted-list';
         adoptedPanel.append(this.adoptedAnimalsList);
 
-        // track phone number and modal state for adoption
-        this.adoptionContacts = new Map();
-        this.pendingAdoption = null;
-
         // phone number modal - element creation
         this.phoneModal = document.createElement('div');
         this.phoneModal.className = 'modal';
@@ -148,7 +148,7 @@ class   AnimalExhibit extends HTMLElement {
 
         this.phoneError = document.createElement('div');
         this.phoneError.className = 'modal-error';
-        this.phoneError.setAttribute = ('aria-live', 'polite');
+        this.phoneError.setAttribute('aria-live', 'polite');
 
         const actions = document.createElement('div');
         actions.className = 'modal-actions';
@@ -556,6 +556,7 @@ class   AnimalExhibit extends HTMLElement {
 
     // helpers for adoption modal and validation
     _openPhoneModal(animal) {
+        console.log('Opening adoption modal for:', animal?.name); //temp log for debugging
         this.pendingAdoption = animal;
         if (this.phoneInput) {
             this.phoneInput.value = '';
@@ -586,7 +587,7 @@ class   AnimalExhibit extends HTMLElement {
         // standard 10 digit phone regex w/ optional +1
         const phonePattern = /^(?:\+1[-.\s]?)?(?:\(?\d{3}\)?[-.\s]?)\d{3}[-.\s]?\d{4}$/;
 
-        if (!rawNumber || !phonePattern.test(rawaNumber)) {
+        if (!rawNumber || !phonePattern.test(rawNumber)) {
             this.phoneError.textContent = 'Please enter a valid phone number (10 digits).';
             this.phoneInput?.focus();
             return;
@@ -636,7 +637,7 @@ class   AnimalExhibit extends HTMLElement {
             btn.setAttribute('aria-label', `Remove adoption for ${name}`);
             btn.addEventListener('click', () => this._unadopt(name));
 
-            li.append(label, btn);
+            li.append(info, btn);
             this.adoptedAnimalsList.appendChild(li);
         }
     }
