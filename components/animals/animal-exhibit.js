@@ -506,19 +506,36 @@ class AnimalExhibit extends HTMLElement {
             if (!this._validateForm()) return;
 
             const formData = new FormData(this.addAnimalForm);
+            
+            // Build animal object, ensuring required fields are present
             const newAnimal = {
-                name: formData.get('species')?.trim() || '',
-                type: formData.get('class')?.trim() || '',
-                conservationStatus: formData.get('conservationStatus')?.trim() || '',
-                habitat: formData.get('habitat')?.trim() || '',
-                image: formData.get('img')?.trim() || 'images/comingSoon.png',
-                description: formData.get('description')?.trim() || '',
-                funFact: formData.get('more')?.trim() || '',
+                name: formData.get('species')?.trim(),
+                type: formData.get('class')?.trim(),
+                conservationStatus: formData.get('conservationStatus')?.trim(),
+                habitat: formData.get('habitat')?.trim(),
+                description: formData.get('description')?.trim(),
             };
 
-            // Remove empty optional fields
-            if (!newAnimal.funFact) {
-                delete newAnimal.funFact;
+            // Add optional fields only if they have values
+            const imgValue = formData.get('img')?.trim();
+            if (imgValue) {
+                newAnimal.image = imgValue;
+            } else {
+                newAnimal.image = 'images/comingSoon.png';
+            }
+
+            const funFactValue = formData.get('more')?.trim();
+            if (funFactValue) {
+                newAnimal.funFact = funFactValue;
+            }
+
+            // Validate required fields are not empty
+            const requiredFields = ['name', 'type', 'conservationStatus', 'habitat', 'description'];
+            for (const field of requiredFields) {
+                if (!newAnimal[field] || newAnimal[field].trim() === '') {
+                    this.formMessage.textContent = `Error: ${field} is required.`;
+                    return;
+                }
             }
 
             try {
@@ -538,14 +555,20 @@ class AnimalExhibit extends HTMLElement {
                 // Handle 204 No Content response (server doesn't return body)
                 let saved = null;
                 if (res.status === 204) {
-                    // For 204, use the data we sent as the saved animal
-                    saved = newAnimal;
+                    // For 204, reload the animals list to get the newly created animal with its ID
+                    await this._loadAnimals();
+                    // Find the newly added animal (it should be the last one or match our data)
+                    saved = this.zooAnimals.find(a => a.name === newAnimal.name && a.type === newAnimal.type) || newAnimal;
                 } else {
                     saved = await res.json();
+                    this.zooAnimals.push(saved);
+                    this._populateDropdown();
                 }
-
-                this.zooAnimals.push(saved);
-                this._populateDropdown();
+                
+                // Only update dropdown if we didn't reload
+                if (res.status !== 204) {
+                    this._populateDropdown();
+                }
 
                 this.formMessage.textContent = 'Animal added!';
                 this.addAnimalForm.reset();

@@ -115,8 +115,8 @@ app.post('/api/animals', async (request, result) => {
         if (error) return result.status(400).json({ error });
 
         const animals = await loadAnimals();
-        const exists = animals.some(a => a.name.toLowerCase() === req.body.name.toLowerCase());
-        if (exists) return res.status(409).json({ error: 'Animal already exists.' });
+        const exists = animals.some(a => a.name.toLowerCase() === request.body.name.toLowerCase());
+        if (exists) return result.status(409).json({ error: 'Animal already exists.' });
         
         const newAnimal = {
             name: request.body.name.trim(),
