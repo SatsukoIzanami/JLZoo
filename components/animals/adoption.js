@@ -193,9 +193,9 @@ function showAdoptionModal(animalName, onAdoptCallback) {
     // Wrap inputs in a form for proper submission handling
     const form = document.createElement('form');
     form.style.margin = 0;
-    form.addEventListener('submit', (e) => {
-        e.preventDefault();
-    });
+    form.method = 'post';
+    form.action = 'javascript:void(0)'; // Prevent default form submission
+    form.noValidate = true; // Disable browser validation since we do custom validation
 
     const btnRow = document.createElement('div');
     btnRow.style.marginTop = '1.2em';
@@ -282,9 +282,17 @@ function showAdoptionModal(animalName, onAdoptCallback) {
         closeModal();
     };
 
-    // modal event wiring
-    form.addEventListener('submit', submitHandler);
-    adoptBtn.onclick = submitHandler;
+    // modal event wiring - attach after form is in DOM
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        submitHandler();
+    });
+    adoptBtn.onclick = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        submitHandler();
+    };
     cancelBtn.onclick = closeModal;
     modal.addEventListener('click', (evt) => {
         if (evt.target === modal) closeModal();
