@@ -41,6 +41,8 @@ class AnimalExhibit extends HTMLElement {
 
         this.addAnimalForm = document.createElement('form');
         this.addAnimalForm.className = 'form-add';   // uses grid CSS
+        this.addAnimalForm.method = 'post';
+        this.addAnimalForm.action = 'javascript:void(0)'; // Prevent default form submission
 
         this.formMessage = document.createElement('p');
         this.formMessage.className = 'form-message';
@@ -505,23 +507,42 @@ class AnimalExhibit extends HTMLElement {
 
             const formData = new FormData(this.addAnimalForm);
             const newAnimal = {
-                name: formData.get('species'),
-                type: formData.get('class'),
-                conservationStatus: formData.get('conservationStatus'),
-                habitat: formData.get('habitat'),
-                image: formData.get('img') || ('images/comingSoon.png'),
-                description: formData.get('description'),
-                funFact: formData.get('more'),
+                name: formData.get('species')?.trim() || '',
+                type: formData.get('class')?.trim() || '',
+                conservationStatus: formData.get('conservationStatus')?.trim() || '',
+                habitat: formData.get('habitat')?.trim() || '',
+                image: formData.get('img')?.trim() || 'images/comingSoon.png',
+                description: formData.get('description')?.trim() || '',
+                funFact: formData.get('more')?.trim() || '',
             };
 
+            // Remove empty optional fields
+            if (!newAnimal.funFact) {
+                delete newAnimal.funFact;
+            }
+
             try {
+                console.log('Sending animal data:', newAnimal);
                 const res = await fetch(`${API_BASE}/animals`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(newAnimal),
                 });
-                if (!res.ok) throw new Error(`Create failed: ${res.status}`);
-                const saved = await res.json();
+                
+                if (!res.ok) {
+                    const errorText = await res.text();
+                    console.error('Server error response:', errorText);
+                    throw new Error(`Create failed: ${res.status} - ${errorText}`);
+                }
+                
+                // Handle 204 No Content response (server doesn't return body)
+                let saved = null;
+                if (res.status === 204) {
+                    // For 204, use the data we sent as the saved animal
+                    saved = newAnimal;
+                } else {
+                    saved = await res.json();
+                }
 
                 this.zooAnimals.push(saved);
                 this._populateDropdown();
