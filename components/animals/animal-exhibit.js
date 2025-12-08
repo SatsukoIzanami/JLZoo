@@ -8,11 +8,6 @@ class AnimalExhibit extends HTMLElement {
         
         // internal state
         this.zooAnimals = [];
-        this.adoptedAnimals = new Set();
-
-        // track phone number and modal state for adoption
-        this.adoptionContacts = new Map(); // animal name to phone
-        this.pendingAdoption = null;
         
         // root container
         const wrapper = document.createElement('div');
@@ -117,65 +112,8 @@ class AnimalExhibit extends HTMLElement {
         addPanel.append(this.addAnimalForm);
         this._attachValidation();
 
-        // adopt section
-        const adoptedPanel = this._createPanel('Adopted Animals');
-        this.adoptedAnimalsList = document.createElement('ul');
-        this.adoptedAnimalsList.className = 'adopted-list';
-        adoptedPanel.append(this.adoptedAnimalsList);
-
-        // phone number modal - element creation
-        this.phoneModal = document.createElement('div');
-        this.phoneModal.className = 'modal';
-
-        
-        const modalDialog = document.createElement('div');
-        modalDialog.className = 'modal-dialog';
-
-        const modalTitle = document.createElement('h3');
-        modalTitle.textContent = 'Adopt this animal!';
-
-        const modalText = document.createElement('p');
-        modalText.textContent = 'Enter a phone number so we can notify you about your adopted animal.';
-
-        this.phoneForm = document.createElement('form');
-
-        this.phoneInput = document.createElement('input');
-        this.phoneInput.type = 'tel';
-        this.phoneInput.name = 'phone';
-        this.phoneInput.required = true;
-        this.phoneInput.placeholder = 'ie. 715-555-1234';
-        this.phoneInput.setAttribute('autocomplete', 'tel');
-
-        this.phoneError = document.createElement('div');
-        this.phoneError.className = 'modal-error';
-        this.phoneError.setAttribute('aria-live', 'polite');
-
-        const actions = document.createElement('div');
-        actions.className = 'modal-actions';
-
-        const cancelBtn = this._createButton('Cancel', 'ghost');
-        cancelBtn.type = 'button';
-
-        const okBtn = this._createButton('Confirm Adoption', 'primary');
-        okBtn.type = 'submit';
-
-        // append modal elements
-        actions.append(cancelBtn, okBtn);
-        this.phoneForm.append(this.phoneInput, this.phoneError, actions);
-
-        modalDialog.append(modalTitle, modalText, this.phoneForm);
-        this.phoneModal.appendChild(modalDialog);
-
-        // close modal on cancel button click
-        cancelBtn.addEventListener('click', () => this._closePhoneModal());
-
-        // clear error while typing
-        this.phoneInput.addEventListener('input', () => {
-            this.phoneError.textContent = '';
-        });
-
         // put panels together
-        wrapper.append(browsePanel, searchPanel, addPanel, adoptedPanel);
+        wrapper.append(browsePanel, searchPanel, addPanel);
 
         // scoped CSS
         const style = document.createElement('style');
@@ -191,8 +129,8 @@ class AnimalExhibit extends HTMLElement {
         .panel h2 { margin-top: 0; font-size: 1.25rem; }
         .row { display: flex; gap: 10px; flex-wrap: wrap; margin: 10px 0; }
         .card-container { margin-top: 12px; }
-        .results-list, .adopted-list { list-style: none; padding: 0; margin: 0; }
-        .results-list li, .adopted-list li { 
+        .results-list { list-style: none; padding: 0; margin: 0; }
+        .results-list li { 
             background: #182635; 
             border-radius: 8px; 
             padding: 6px 10px; 
@@ -203,20 +141,6 @@ class AnimalExhibit extends HTMLElement {
         .btn.primary { background: #5aa2ff; color: #000; margin-left: 1rem;}
         .btn.ghost { background: transparent; border: 1px solid #5aa2ff; }
         .form-message { min-height: 1em; font-size: 0.9rem; color: #53e0c1; }
-        .adopted-list { padding-left: 0; list-style: none; }
-        .adopted-list li {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 8px;
-            padding: 6px 8px;
-            border: 1px solid var(--border, #1a2440);
-            border-radius: 8px;
-            margin: 6px 0;
-            }
-        .btn.sm { padding: 4px 8px; font-size: 12px; border-radius: 8px; }
-        .btn.danger { background: #4a1111; border-color: #6b1b1b; }
-        .btn.danger:hover { background: #5a1515; }
         /* Add-form layout */
         .form-add {
         display: grid;
@@ -261,68 +185,9 @@ class AnimalExhibit extends HTMLElement {
             border-color: #b23a3a;
             outline: none;
             }
-                .adopt-info {
-            flex: 1 1 auto;
-            display: flex;
-            flex-direction: column;
-        }
-        .adopt-phone {
-            font-size: 11px;
-            opacity: 0.8;
-        }
-
-        .modal {
-            position: fixed;
-            inset: 0;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            background: rgba(0,0,0,0.6);
-            z-index: 1000;
-        }
-        .modal.open {
-            display: flex;
-        }
-        .modal-dialog {
-            background: #101820;
-            padding: 16px 20px;
-            border-radius: 12px;
-            max-width: 340px;
-            width: 90%;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
-        }
-        .modal-dialog h3 {
-            margin-top: 0;
-            margin-bottom: 0.5rem;
-        }
-        .modal-dialog p {
-            margin-top: 0;
-            margin-bottom: 0.75rem;
-            font-size: 0.9rem;
-        }
-        .modal-dialog input[type="tel"] {
-            width: 100%;
-            padding: 8px 10px;
-            border-radius: 10px;
-            border: 1px solid var(--border, #1a2440);
-            background: #0b1223;
-            color: inherit;
-        }
-        .modal-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 8px;
-            margin-top: 12px;
-        }
-        .modal-error {
-            color: #ffb4a3;
-            font-size: 12px;
-            margin-top: 4px;
-            min-height: 1.2em;
-        }
         `;
 
-    this.shadowRoot.append(style, wrapper, this.phoneModal);
+    this.shadowRoot.append(style, wrapper);
     }
 
     connectedCallback() {
@@ -560,148 +425,6 @@ class AnimalExhibit extends HTMLElement {
         });
     }
 
-    // helpers for adoption modal and validation
-    _openPhoneModal(animal) {
-        console.log('Opening adoption modal for:', animal?.name); //temp log for debugging modal issues
-        this.pendingAdoption = animal;
-        if (this.phoneInput) {
-            this.phoneInput.value = '';
-            this.phoneError.textContent = '';
-            setTimeout(() => this.phoneInput.focus(), 0);
-        }
-        if (this.phoneModal) {
-            this.phoneModal.classList.add('open');
-        }
-    }
-
-    _closePhoneModal() {
-        if (this.phoneModal) {
-            this.phoneModal.classList.remove('open');
-        }
-        this.pendingAdoption = null;
-    }
-
-    _handlePhoneSubmit(e) {
-        e.preventDefault();
-        if (!this.pendingAdoption) {
-            this._closePhoneModal();
-            return;
-        }
-
-        const rawNumber = (this.phoneInput?.value || '').trim();
-
-        // quick format check: optional +1, then 10 digits with common separators
-        const basicPattern = /^\s*(?:\+?1[.\-\s]?)?(?:\(?\d{3}\)?[.\-\s]?\d{3}[.\-\s]?\d{4})\s*$/;
-        if (!basicPattern.test(rawNumber)) {
-            this.phoneError.textContent = 'Please enter a valid phone number (10 digits).';
-            this.phoneInput?.focus();
-            return;
-        }
-
-        // strip to digits and apply stricter numeric rules
-        let digits = rawNumber.replace(/\D/g, '');
-
-        // allow leading 1 (country code) but remove it for validation
-        if (digits.length === 11 && digits.startsWith('1')) {
-            digits = digits.slice(1);
-        }
-
-        if (digits.length !== 10) {
-            this.phoneError.textContent = 'Phone number must have exactly 10 digits.';
-            this.phoneInput?.focus();
-            return;
-        }
-
-        const area = digits.slice(0, 3);
-        const exchange = digits.slice(3, 6);
-        const line = digits.slice(6);
-
-        // area code: first digit 2–9
-        if (area[0] < '2' || area[0] > '9') {
-            this.phoneError.textContent = 'Area code must start with digits 2–9.';
-            this.phoneInput?.focus();
-            return;
-        }
-
-        // exchange: first digit 2–9
-        if (exchange[0] < '2' || exchange[0] > '9') {
-            this.phoneError.textContent = 'Phone number prefix must start with digits 2–9.';
-            this.phoneInput?.focus();
-            return;
-        }
-
-        // disallow obviously fake combos
-        if (exchange === '000' || line === '0000') {
-            this.phoneError.textContent = 'Please enter a realistic phone number, not all zeros.';
-            this.phoneInput?.focus();
-            return;
-        }
-
-        // disallow numbers where all 10 digits are the same
-        if (/^(\d)\1{9}$/.test(digits)) {
-            this.phoneError.textContent = 'Please enter a realistic phone number.';
-            this.phoneInput?.focus();
-            return;
-        }
-        
-        // on success, record adoption and phone number
-        this.adoptedAnimals.add(this.pendingAdoption.name);
-        if (this.adoptionContacts) {
-            this.adoptionContacts.set(this.pendingAdoption.name, rawNumber);
-        }
-        this._renderAdoptedList();
-        this._closePhoneModal();
-    }
-
-
-    _renderAdoptedList() {
-        this._clearNode(this.adoptedAnimalsList);
-
-        if (!this.adoptedAnimals || this.adoptedAnimals.size === 0) {
-            const li = document.createElement('li');
-            li.className = 'muted';
-            li.textContent = 'No adopted animals yet.';
-            this.adoptedAnimalsList.appendChild(li);
-            return;
-        }
-
-        for (const name of this.adoptedAnimals) {
-            const li = document.createElement('li');
-
-            const info = document.createElement('div');
-            info.className = 'adopt-info';
-
-            const label = document.createElement('span');
-            label.textContent = name;
-
-            const phone = this.adoptionContacts?.get(name);
-            const phoneEl = document.createElement('span');
-            phoneEl.className = 'adopt-phone';
-            phoneEl.textContent = phone ? `Phone: ${phone}` : '';
-
-            info.append(label);
-            if (phone) info.append(phoneEl);
-
-            const btn = document.createElement('button');
-            btn.type = 'button';
-            btn.className = 'btn danger sm';
-            btn.textContent = 'Remove';
-            btn.setAttribute('aria-label', `Remove adoption for ${name}`);
-            btn.addEventListener('click', () => this._unadopt(name));
-
-            li.append(info, btn);
-            this.adoptedAnimalsList.appendChild(li);
-        }
-    }
-
-    _unadopt(aName) {
-        if (!aName) return;
-        if (this.adoptedAnimals?.delete(aName)) {
-            this.adoptionContacts?.delete(aName);
-            this._renderAdoptedList();   // redraw the list
-        }
-    }
-
     _wireEvents() {
         this.selectedAnimalDropdown.addEventListener('change', async () => {
             const selected = this.zooAnimals.find(a => a.name === this.selectedAnimalDropdown.value);
@@ -813,12 +536,7 @@ class AnimalExhibit extends HTMLElement {
         const descEl = document.createElement('p');
         descEl.textContent = animal.description || '';
 
-        const adoptBtn = this._createButton('Adopt', 'primary');
-        adoptBtn.addEventListener('click', () => {
-            this._openPhoneModal(animal);
-        });
-
-        card.append(img, nameEl, typeEl, statusEl, habitatEl, descEl, adoptBtn);
+        card.append(img, nameEl, typeEl, statusEl, habitatEl, descEl);
         this.animalCardContainer.appendChild(card);
     }
 }
