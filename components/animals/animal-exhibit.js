@@ -500,6 +500,7 @@ class AnimalExhibit extends HTMLElement {
 
         this.addAnimalForm.addEventListener('submit', async (e) => {
             e.preventDefault();
+            e.stopPropagation();
             if (!this._validateForm()) return;
 
             const formData = new FormData(this.addAnimalForm);
@@ -535,11 +536,6 @@ class AnimalExhibit extends HTMLElement {
                 this.formMessage.textContent = 'Error: could not save animal.';
             }
         });
-
-        // phone form submit for adoptions
-        if (this.phoneForm) {
-            this.phoneForm.addEventListener('submit', (e) => this._handlePhoneSubmit(e));
-        }
     }
 
     _renderCard(animal) {
