@@ -126,19 +126,27 @@ function showAdoptionModal(animalName, onAdoptCallback) {
 
     // modal content
     const modalBox = document.createElement('div');
-    modalBox.style.background = 'white';
+    modalBox.style.background = '#2a3441';
     modalBox.style.padding = '2rem';
-    modalBox.style.borderRadius = '6px';
-    modalBox.style.boxShadow = '0 2px 18px #999';
+    modalBox.style.borderRadius = '12px';
+    modalBox.style.boxShadow = '0 8px 24px rgba(0,0,0,0.5)';
+    modalBox.style.color = '#f0f4ff';
+    modalBox.style.fontFamily = 'system-ui, sans-serif';
+    modalBox.style.maxWidth = '400px';
+    modalBox.style.width = '90%';
     modalBox.tabIndex = 0;
 
     const title = document.createElement('h2');
     title.textContent = `Adopt ${animalName}`;
+    title.style.marginTop = '0';
+    title.style.marginBottom = '1rem';
+    title.style.fontSize = '1.25rem';
     
     const nameInstr = document.createElement('p');
     nameInstr.textContent = 'Give your adopted animal a custom name (optional):';
     nameInstr.style.marginTop = '0';
     nameInstr.style.marginBottom = '0.5em';
+    nameInstr.style.color = '#f0f4ff';
 
     const nameInput = document.createElement('input');
     nameInput.type = 'text';
@@ -147,15 +155,19 @@ function showAdoptionModal(animalName, onAdoptCallback) {
     nameInput.setAttribute('aria-label', 'Custom name for adopted animal');
     nameInput.setAttribute('maxlength', '40');
     nameInput.style.width = '100%';
-    nameInput.style.padding = '0.5em';
+    nameInput.style.padding = '8px 10px';
     nameInput.style.marginBottom = '1em';
-    nameInput.style.border = '1px solid #ccc';
-    nameInput.style.borderRadius = '4px';
+    nameInput.style.border = '1px solid #1a2440';
+    nameInput.style.borderRadius = '10px';
     nameInput.style.fontSize = '1em';
+    nameInput.style.background = '#0b1223';
+    nameInput.style.color = '#f0f4ff';
+    nameInput.style.boxSizing = 'border-box';
 
     const phoneInstr = document.createElement('p');
     phoneInstr.textContent = 'Please enter your phone number to finalize your adoption:';
     phoneInstr.style.marginBottom = '0.5em';
+    phoneInstr.style.color = '#f0f4ff';
 
     const phoneInput = document.createElement('input');
     phoneInput.type = 'tel';
@@ -163,17 +175,27 @@ function showAdoptionModal(animalName, onAdoptCallback) {
     phoneInput.placeholder = 'e.g. 555-555-5555';
     phoneInput.setAttribute('aria-label', 'Phone number');
     phoneInput.style.width = '100%';
-    phoneInput.style.padding = '0.5em';
+    phoneInput.style.padding = '8px 10px';
     phoneInput.style.marginBottom = '0.5em';
-    phoneInput.style.border = '1px solid #ccc';
-    phoneInput.style.borderRadius = '4px';
+    phoneInput.style.border = '1px solid #1a2440';
+    phoneInput.style.borderRadius = '10px';
     phoneInput.style.fontSize = '1em';
+    phoneInput.style.background = '#0b1223';
+    phoneInput.style.color = '#f0f4ff';
+    phoneInput.style.boxSizing = 'border-box';
 
     const errorMsg = document.createElement('div');
-    errorMsg.style.color = 'red';
+    errorMsg.style.color = '#ffb4a3';
     errorMsg.style.fontSize = '0.9em';
     errorMsg.style.margin = '0.5em 0';
     errorMsg.style.minHeight = '1.2em';
+
+    // Wrap inputs in a form for proper submission handling
+    const form = document.createElement('form');
+    form.style.margin = 0;
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+    });
 
     const btnRow = document.createElement('div');
     btnRow.style.marginTop = '1.2em';
@@ -184,26 +206,32 @@ function showAdoptionModal(animalName, onAdoptCallback) {
     const cancelBtn = document.createElement('button');
     cancelBtn.type = 'button';
     cancelBtn.textContent = 'Cancel';
-    cancelBtn.style.padding = '0.5em 1em';
-    cancelBtn.style.border = '1px solid #ccc';
-    cancelBtn.style.borderRadius = '4px';
-    cancelBtn.style.background = 'white';
+    cancelBtn.style.padding = '8px 14px';
+    cancelBtn.style.border = '1px solid #5aa2ff';
+    cancelBtn.style.borderRadius = '8px';
+    cancelBtn.style.background = 'transparent';
+    cancelBtn.style.color = '#f0f4ff';
     cancelBtn.style.cursor = 'pointer';
+    cancelBtn.style.fontSize = '1em';
+    cancelBtn.style.fontFamily = 'inherit';
 
     const adoptBtn = document.createElement('button');
     adoptBtn.textContent = 'Adopt';
     adoptBtn.type = 'submit';
     adoptBtn.style.fontWeight = 'bold';
-    adoptBtn.style.padding = '0.5em 1em';
+    adoptBtn.style.padding = '8px 14px';
     adoptBtn.style.border = 'none';
-    adoptBtn.style.borderRadius = '4px';
+    adoptBtn.style.borderRadius = '8px';
     adoptBtn.style.background = '#5aa2ff';
     adoptBtn.style.color = '#000';
     adoptBtn.style.cursor = 'pointer';
+    adoptBtn.style.fontSize = '1em';
+    adoptBtn.style.fontFamily = 'inherit';
 
     btnRow.append(cancelBtn, adoptBtn);
+    form.append(nameInstr, nameInput, phoneInstr, phoneInput, errorMsg, btnRow);
 
-    modalBox.append(title, nameInstr, nameInput, phoneInstr, phoneInput, errorMsg, btnRow);
+    modalBox.append(title, form);
     modal.appendChild(modalBox);
     document.body.appendChild(modal);
 
@@ -255,6 +283,7 @@ function showAdoptionModal(animalName, onAdoptCallback) {
     };
 
     // modal event wiring
+    form.addEventListener('submit', submitHandler);
     adoptBtn.onclick = submitHandler;
     cancelBtn.onclick = closeModal;
     modal.addEventListener('click', (evt) => {
@@ -270,6 +299,19 @@ function showAdoptionModal(animalName, onAdoptCallback) {
     };
     nameInput.addEventListener('keydown', handleEnter);
     phoneInput.addEventListener('keydown', handleEnter);
+
+    // Add focus styles for inputs
+    const addFocusStyle = (input) => {
+        input.addEventListener('focus', () => {
+            input.style.outline = 'none';
+            input.style.borderColor = '#5aa2ff';
+        });
+        input.addEventListener('blur', () => {
+            input.style.borderColor = '#1a2440';
+        });
+    };
+    addFocusStyle(nameInput);
+    addFocusStyle(phoneInput);
 
     function closeModal() {
         modal.remove();

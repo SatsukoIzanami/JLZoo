@@ -1,6 +1,6 @@
 // components/animals/animal-exhibit.js
 import { API_BASE } from '../config.js';
-import { showAdoptionModal } from './adoption.js';
+import { showAdoptionModal, adoptedAnimals, adoptionContacts, getDisplayName, getAdoptionContact, markAdopted, resetAdoptions } from './adoption.js';
 
 class AnimalExhibit extends HTMLElement {
     constructor() {
@@ -113,8 +113,14 @@ class AnimalExhibit extends HTMLElement {
         addPanel.append(this.addAnimalForm);
         this._attachValidation();
 
+        // adopt section
+        const adoptedPanel = this._createPanel('Adopted Animals');
+        this.adoptedAnimalsList = document.createElement('ul');
+        this.adoptedAnimalsList.className = 'adopted-list';
+        adoptedPanel.append(this.adoptedAnimalsList);
+
         // put panels together
-        wrapper.append(browsePanel, searchPanel, addPanel);
+        wrapper.append(browsePanel, searchPanel, addPanel, adoptedPanel);
 
         // scoped CSS
         const style = document.createElement('style');
@@ -130,7 +136,7 @@ class AnimalExhibit extends HTMLElement {
         .panel h2 { margin-top: 0; font-size: 1.25rem; }
         .row { display: flex; gap: 10px; flex-wrap: wrap; margin: 10px 0; }
         .card-container { margin-top: 12px; }
-        .results-list { list-style: none; padding: 0; margin: 0; }
+        .results-list, .adopted-list { list-style: none; padding: 0; margin: 0; }
         .results-list li { 
             background: #182635; 
             border-radius: 8px; 
@@ -138,6 +144,29 @@ class AnimalExhibit extends HTMLElement {
             margin-top: 6px; 
             cursor: pointer; 
             }
+        .adopted-list li {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            padding: 6px 8px;
+            border: 1px solid var(--border, #1a2440);
+            border-radius: 8px;
+            margin: 6px 0;
+            background: #182635;
+        }
+        .adopt-info {
+            flex: 1 1 auto;
+            display: flex;
+            flex-direction: column;
+        }
+        .adopt-phone {
+            font-size: 11px;
+            opacity: 0.8;
+        }
+        .btn.sm { padding: 4px 8px; font-size: 12px; border-radius: 8px; }
+        .btn.danger { background: #4a1111; border-color: #6b1b1b; }
+        .btn.danger:hover { background: #5a1515; }
         .btn { padding: 8px 14px; border-radius: 8px; cursor: pointer; border: none; }
         .btn.primary { background: #5aa2ff; color: #000; margin-left: 1rem;}
         .btn.ghost { background: transparent; border: 1px solid #5aa2ff; }
@@ -194,6 +223,7 @@ class AnimalExhibit extends HTMLElement {
     connectedCallback() {
         this._wireEvents();
         this._loadAnimals();
+        this._renderAdoptedList();
     }
 
     // utilities
@@ -540,13 +570,57 @@ class AnimalExhibit extends HTMLElement {
         const adoptBtn = this._createButton('Adopt', 'primary');
         adoptBtn.addEventListener('click', () => {
             showAdoptionModal(animal.name, (originalName, phoneNumber, customName) => {
-                // Callback after successful adoption
-                console.log(`Adopted ${originalName}${customName !== originalName ? ` as ${customName}` : ''} with phone ${phoneNumber}`);
+                // Callback after successful adoption - refresh the adopted list
+                this._renderAdoptedList();
             });
         });
 
         card.append(img, nameEl, typeEl, statusEl, habitatEl, descEl, adoptBtn);
         this.animalCardContainer.appendChild(card);
+    }
+
+    _renderAdoptedList() {
+        this._clearNode(this.adoptedAnimalsList);
+
+        if (!adoptedAnimals || adoptedAnimals.size === 0) {
+            const li = document.createElement('li');
+            li.className = 'muted';
+            li.textContent = 'No adopted animals yet.';
+            this.adoptedAnimalsList.appendChild(li);
+            return;
+        }
+
+        for (const adoptedName of adoptedAnimals) {
+            const li = document.createElement('li');
+
+            const info = document.createElement('div');
+            info.className = 'adopt-info';
+
+            const label = document.createElement('span');
+            label.textContent = adoptedName;
+
+            const phone = getAdoptionContact(adoptedName);
+            const phoneEl = document.createElement('span');
+            phoneEl.className = 'adopt-phone';
+            phoneEl.textContent = phone ? `Phone: ${phone}` : '';
+
+            info.append(label);
+            if (phone) info.append(phoneEl);
+
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'btn danger sm';
+            btn.textContent = 'Remove';
+            btn.setAttribute('aria-label', `Remove adoption for ${adoptedName}`);
+            btn.addEventListener('click', () => {
+                adoptedAnimals.delete(adoptedName);
+                adoptionContacts.delete(adoptedName);
+                this._renderAdoptedList();
+            });
+
+            li.append(info, btn);
+            this.adoptedAnimalsList.appendChild(li);
+        }
     }
 }
 
