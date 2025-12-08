@@ -1,5 +1,6 @@
 // components/animals/animal-exhibit.js
 import { API_BASE } from '../config.js';
+import { showAdoptionModal } from './adoption.js';
 
 class AnimalExhibit extends HTMLElement {
     constructor() {
@@ -536,7 +537,15 @@ class AnimalExhibit extends HTMLElement {
         const descEl = document.createElement('p');
         descEl.textContent = animal.description || '';
 
-        card.append(img, nameEl, typeEl, statusEl, habitatEl, descEl);
+        const adoptBtn = this._createButton('Adopt', 'primary');
+        adoptBtn.addEventListener('click', () => {
+            showAdoptionModal(animal.name, (originalName, phoneNumber, customName) => {
+                // Callback after successful adoption
+                console.log(`Adopted ${originalName}${customName !== originalName ? ` as ${customName}` : ''} with phone ${phoneNumber}`);
+            });
+        });
+
+        card.append(img, nameEl, typeEl, statusEl, habitatEl, descEl, adoptBtn);
         this.animalCardContainer.appendChild(card);
     }
 }
