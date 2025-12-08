@@ -126,7 +126,7 @@ function showAdoptionModal(animalName, onAdoptCallback) {
 
     // modal content
     const modalBox = document.createElement('div');
-    modalBox.style.background = '#2a3441';
+    modalBox.style.background = '#101820';
     modalBox.style.padding = '2rem';
     modalBox.style.borderRadius = '12px';
     modalBox.style.boxShadow = '0 8px 24px rgba(0,0,0,0.5)';

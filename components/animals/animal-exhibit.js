@@ -125,7 +125,7 @@ class AnimalExhibit extends HTMLElement {
         // scoped CSS
         const style = document.createElement('style');
         style.textContent = `
-        :host { display: block; font-family: system-ui, sans-serif; color: #f0f4ff; --label-w: 160px; --field-w: 420px;}
+        :host { display: block; font-family: system-ui, sans-serif; color: #f0f4ff; --label-w: 160px; --field-w: 420px; background: #2a3441; padding: 20px; min-height: 100vh;}
         .exhibit-wrapper { display: grid; gap: 20px; }
         .panel { 
             background: #101820; 

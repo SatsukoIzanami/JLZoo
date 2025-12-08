@@ -1,0 +1,130 @@
+(function(){const a=document.createElement("link").relList;if(a&&a.supports&&a.supports("modulepreload"))return;for(const t of document.querySelectorAll('link[rel="modulepreload"]'))n(t);new MutationObserver(t=>{for(const s of t)if(s.type==="childList")for(const r of s.addedNodes)r.tagName==="LINK"&&r.rel==="modulepreload"&&n(r)}).observe(document,{childList:!0,subtree:!0});function e(t){const s={};return t.integrity&&(s.integrity=t.integrity),t.referrerPolicy&&(s.referrerPolicy=t.referrerPolicy),t.crossOrigin==="use-credentials"?s.credentials="include":t.crossOrigin==="anonymous"?s.credentials="omit":s.credentials="same-origin",s}function n(t){if(t.ep)return;t.ep=!0;const s=e(t);fetch(t.href,s)}})();class S extends HTMLElement{constructor(){super();const a=this.attachShadow({mode:"open"}),e=document.createElement("style");e.textContent=`
+            :host { display:block; width:100%; }
+
+            .navbar {
+              position: sticky;
+              top: 0;
+              z-index: 1000;
+              background: #fff;
+              border-bottom: 1px solid #eaeaea;
+
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              padding: 0.75rem 1rem;}
+
+            .brand {
+              font-weight: 800;
+              font-size: 1.6rem;
+              color: #111;
+              white-space: nowrap;}
+
+            .links {
+              display: flex;
+              gap: 1.5rem;
+              flex-wrap: nowrap;}
+
+            a {
+              color: var(--font-color, #333);
+              text-decoration: none;
+              padding: 0.4rem 0.6rem;
+              border-radius: var(--border-radius, 6px);
+              transition: background 0.2s, color 0.2s;}
+
+            a:hover,
+            a:focus-visible {
+              color: var(--accent-color, #0077cc);
+              background: rgba(0, 119, 204, 0.08);
+              outline: none;}
+            `;const n=document.createElement("nav");n.className="navbar";const t=document.createElement("a");t.className="brand",t.href="index.html",t.textContent="JL Zoo";const s=document.createElement("div");s.className="links";const r=(o,l)=>{const i=document.createElement("a");return i.href=l,i.textContent=o,i};s.append(r("Home","index.html"),r("About","about.html"),r("Contact","contact.html")),n.append(t,s),a.append(e,n)}}customElements.define("site-nav",S);const L=location.hostname.endsWith("github.io")?"https://jlzoo.onrender.com/api":"http://localhost:3000/api",E=new Set,w=new Map,F=new Map;function k(c,a,e){const n=e?.trim()||c;E.add(n),a&&w.set(n,a),e?.trim()&&e.trim()!==c&&F.set(c,e.trim())}function P(c){return w.get(c)}function N(c,a){const e=document.querySelector(".adoption-modal");e&&e.remove();const n=document.createElement("div");n.className="adoption-modal",n.setAttribute("role","dialog"),n.setAttribute("aria-modal","true"),n.style.position="fixed",n.style.zIndex=1e3,n.style.left=0,n.style.top=0,n.style.width="100vw",n.style.height="100vh",n.style.display="flex",n.style.alignItems="center",n.style.justifyContent="center",n.style.backgroundColor="rgba(0,0,0,0.45)";const t=document.createElement("div");t.style.background="#101820",t.style.padding="2rem",t.style.borderRadius="12px",t.style.boxShadow="0 8px 24px rgba(0,0,0,0.5)",t.style.color="#f0f4ff",t.style.fontFamily="system-ui, sans-serif",t.style.maxWidth="400px",t.style.width="90%",t.tabIndex=0;const s=document.createElement("h2");s.textContent=`Adopt ${c}`,s.style.marginTop="0",s.style.marginBottom="1rem",s.style.fontSize="1.25rem";const r=document.createElement("p");r.textContent="Give your adopted animal a custom name (optional):",r.style.marginTop="0",r.style.marginBottom="0.5em",r.style.color="#f0f4ff";const o=document.createElement("input");o.type="text",o.placeholder=c,o.value=c,o.setAttribute("aria-label","Custom name for adopted animal"),o.setAttribute("maxlength","40"),o.style.width="100%",o.style.padding="8px 10px",o.style.marginBottom="1em",o.style.border="1px solid #1a2440",o.style.borderRadius="10px",o.style.fontSize="1em",o.style.background="#0b1223",o.style.color="#f0f4ff",o.style.boxSizing="border-box";const l=document.createElement("p");l.textContent="Please enter your phone number to finalize your adoption:",l.style.marginBottom="0.5em",l.style.color="#f0f4ff";const i=document.createElement("input");i.type="tel",i.required=!0,i.placeholder="e.g. 555-555-5555",i.setAttribute("aria-label","Phone number"),i.style.width="100%",i.style.padding="8px 10px",i.style.marginBottom="0.5em",i.style.border="1px solid #1a2440",i.style.borderRadius="10px",i.style.fontSize="1em",i.style.background="#0b1223",i.style.color="#f0f4ff",i.style.boxSizing="border-box";const d=document.createElement("div");d.style.color="#ffb4a3",d.style.fontSize="0.9em",d.style.margin="0.5em 0",d.style.minHeight="1.2em";const p=document.createElement("form");p.style.margin=0,p.addEventListener("submit",m=>{m.preventDefault()});const f=document.createElement("div");f.style.marginTop="1.2em",f.style.display="flex",f.style.gap="1em",f.style.justifyContent="flex-end";const h=document.createElement("button");h.type="button",h.textContent="Cancel",h.style.padding="8px 14px",h.style.border="1px solid #5aa2ff",h.style.borderRadius="8px",h.style.background="transparent",h.style.color="#f0f4ff",h.style.cursor="pointer",h.style.fontSize="1em",h.style.fontFamily="inherit";const u=document.createElement("button");u.textContent="Adopt",u.type="submit",u.style.fontWeight="bold",u.style.padding="8px 14px",u.style.border="none",u.style.borderRadius="8px",u.style.background="#5aa2ff",u.style.color="#000",u.style.cursor="pointer",u.style.fontSize="1em",u.style.fontFamily="inherit",f.append(h,u),p.append(r,o,l,i,d,f),t.append(s,p),n.appendChild(t),document.body.appendChild(n),o.focus(),o.select(),o.addEventListener("input",()=>{d.textContent&&(d.textContent="")}),i.addEventListener("input",()=>{d.textContent&&(d.textContent="")});const y=()=>{const m=o.value.trim(),v=z(m);if(!v.valid){d.textContent=v.message,o.focus();return}const g=i.value.trim(),A=R(g);if(!A.valid){d.textContent=A.message,i.focus();return}const _=m||c;k(c,g,m),a&&a(c,g,_),b()};p.addEventListener("submit",y),u.onclick=y,h.onclick=b,n.addEventListener("click",m=>{m.target===n&&b()});const x=m=>{m.key==="Enter"&&(m.preventDefault(),y())};o.addEventListener("keydown",x),i.addEventListener("keydown",x);const C=m=>{m.addEventListener("focus",()=>{m.style.outline="none",m.style.borderColor="#5aa2ff"}),m.addEventListener("blur",()=>{m.style.borderColor="#1a2440"})};C(o),C(i);function b(){n.remove()}}function z(c){const a=c.trim();if(a==="")return{valid:!0,message:""};if(a.length<2)return{valid:!1,message:"Name must be at least 2 characters long."};if(a.length>40)return{valid:!1,message:"Name must be 40 characters or less."};if(!/^(?:[A-Za-z]{2,}|[A-Za-z][\s\-']?[A-Za-z])(?:[\s\-'][A-Za-z]+)*$/.test(a))return{valid:!1,message:"Name must contain only letters, spaces, hyphens, and apostrophes."};if(!/[A-Za-z]/.test(a))return{valid:!1,message:"Name must contain at least one letter."};const n=a.replace(/[\s\-']/g,"").toLowerCase();return n.length>0&&/^([a-z])\1+$/.test(n)?{valid:!1,message:"Name cannot consist of only repeating letters."}:{valid:!0,message:""}}function R(c){const a=c.trim();if(!/^\s*(?:\+?1[.\-\s]?)?(?:\(?\d{3}\)?[.\-\s]?\d{3}[.\-\s]?\d{4})\s*$/.test(a))return{valid:!1,message:"Please enter a valid phone number (10 digits)."};let n=a.replace(/\D/g,"");if(n.length===11&&n.startsWith("1")&&(n=n.slice(1)),n.length!==10)return{valid:!1,message:"Phone number must have exactly 10 digits."};const t=n.slice(0,3),s=n.slice(3,6),r=n.slice(6);return t[0]<"2"||t[0]>"9"?{valid:!1,message:"Area code must start with digits 2-9."}:s[0]<"2"||s[0]>"9"?{valid:!1,message:"Phone number prefix must start with digits 2-9."}:s==="000"||r==="0000"?{valid:!1,message:"Please enter a realistic phone number, not all zeros."}:/^(\d)\1{9}$/.test(n)?{valid:!1,message:"Please enter a realistic phone number."}:t===s&&s===r?{valid:!1,message:"Please enter a realistic phone number."}:(l=>{let i=!0,d=!0;for(let p=1;p<l.length;p++)parseInt(l[p])!==parseInt(l[p-1])+1&&(i=!1),parseInt(l[p])!==parseInt(l[p-1])-1&&(d=!1);return i||d})(n)?{valid:!1,message:"Please enter a realistic phone number."}:{valid:!0,message:""}}class I extends HTMLElement{constructor(){super(),this.attachShadow({mode:"open"}),this.zooAnimals=[];const a=document.createElement("div");a.className="exhibit-wrapper";const e=this._createPanel("Browse by Animal");this.selectedAnimalDropdown=document.createElement("select"),this.selectedAnimalDropdown.setAttribute("aria-label","Animal Dropdown"),this.animalCardContainer=document.createElement("div"),this.animalCardContainer.className="card-container";const n=this._createRow(this.selectedAnimalDropdown);e.append(n,this.animalCardContainer);const t=this._createPanel("Search the Zoo");this.searchQueryInput=document.createElement("input"),this.searchQueryInput.type="search",this.searchQueryInput.placeholder="Search by name or class...",this.searchResultsList=document.createElement("ul"),this.searchResultsList.className="results-list",t.append(this.searchQueryInput,this.searchResultsList);const s=this._createPanel("Add an Animal");this.addAnimalForm=document.createElement("form"),this.addAnimalForm.className="form-add",this.formMessage=document.createElement("p"),this.formMessage.className="form-message";const r="^(?:[A-Za-z]{2,}|[A-Za-z][ \\-][A-Za-z])(?:[ \\-][A-Za-z]+)*$",o=this._field("Species *","species","input",{type:"text",required:"",minlength:"2",maxlength:"40",pattern:r,title:"Letters only (spaces or hyphens allowed, at least 2 letters)"}),l=this._field("Class *","class","input",{type:"text",required:"",minlength:"2",maxlength:"40",pattern:r,title:"Letters only (spaces or hyphens allowed, at least 2 letters)"}),i=this._field("Conservation Status *","conservationStatus","select",{required:""}),d=i.querySelector("select");["","Least Concern","Near Threatened","Vulnerable","Endangered","Critically Endangered"].forEach(v=>{const g=document.createElement("option");g.value=v,g.textContent=v||"— Select status —",d.appendChild(g)});const p=this._field("Habitat *","habitat","input",{type:"text",required:"",minlength:"2",maxlength:"60",pattern:r,title:"Letters only (spaces or hyphens allowed, at least 2 letters)"}),f=this._field("Image URL","img","input",{type:"url",placeholder:"https://…",pattern:"^https://.+",title:"Must start with https:// and end with .png, .jpg, .jpeg, or .gif"}),h=this._field("Description *","description","textarea",{rows:"3",placeholder:"Short description",required:"",minlength:"10",maxlength:"500"}),u=this._field("Fun Fact","more","input",{type:"text",placeholder:"Optional",maxlength:"120"}),y=this._createButton("Add to Zoo","primary");y.type="submit";const x=this._createButton("Reset","ghost");x.type="reset";const C=this._createRow([y,x]);this.addAnimalForm.append(o,l,i,p,f,h,u,C,this.formMessage),s.append(this.addAnimalForm),this._attachValidation();const b=this._createPanel("Adopted Animals");this.adoptedAnimalsList=document.createElement("ul"),this.adoptedAnimalsList.className="adopted-list",b.append(this.adoptedAnimalsList),a.append(e,t,s,b);const m=document.createElement("style");m.textContent=`
+        :host { display: block; font-family: system-ui, sans-serif; color: #f0f4ff; --label-w: 160px; --field-w: 420px; background: #2a3441; padding: 20px; min-height: 100vh;}
+        .exhibit-wrapper { display: grid; gap: 20px; }
+        .panel { 
+            background: #101820; 
+            border-radius: 12px; 
+            padding: 16px; 
+            box-shadow: 0 4px 12px rgba(0,0,0,.3); 
+            }
+        .panel h2 { margin-top: 0; font-size: 1.25rem; }
+        .row { display: flex; gap: 10px; flex-wrap: wrap; margin: 10px 0; }
+        .card-container { margin-top: 12px; }
+        .results-list, .adopted-list { list-style: none; padding: 0; margin: 0; }
+        .results-list li { 
+            background: #182635; 
+            border-radius: 8px; 
+            padding: 6px 10px; 
+            margin-top: 6px; 
+            cursor: pointer; 
+            }
+        .adopted-list li {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            padding: 6px 8px;
+            border: 1px solid var(--border, #1a2440);
+            border-radius: 8px;
+            margin: 6px 0;
+            background: #182635;
+        }
+        .adopt-info {
+            flex: 1 1 auto;
+            display: flex;
+            flex-direction: column;
+        }
+        .adopt-phone {
+            font-size: 11px;
+            opacity: 0.8;
+        }
+        .btn.sm { padding: 4px 8px; font-size: 12px; border-radius: 8px; }
+        .btn.danger { background: #4a1111; border-color: #6b1b1b; }
+        .btn.danger:hover { background: #5a1515; }
+        .btn { padding: 8px 14px; border-radius: 8px; cursor: pointer; border: none; }
+        .btn.primary { background: #5aa2ff; color: #000; margin-left: 1rem;}
+        .btn.ghost { background: transparent; border: 1px solid #5aa2ff; }
+        .form-message { min-height: 1em; font-size: 0.9rem; color: #53e0c1; }
+        /* Add-form layout */
+        .form-add {
+        display: grid;
+        row-gap: 12px;
+        }
+        .form-add .field {
+        display: grid;
+        grid-template-columns: var(--label-w) minmax(0, var(--field-w));
+        align-items: center;
+        column-gap: 16px;
+        }
+        .form-add label {
+        font-weight: 600;
+        }
+        /* inputs look tidy */
+        .form-add input,
+        .form-add select,
+        .form-add textarea {
+        width: 100%;
+        padding: 8px 10px;
+        border: 1px solid var(--border, #1a2440);
+        background: #0b1223;
+        color: inherit;
+        border-radius: 10px;
+        }
+        /* stack label above input on small screens */
+        @media (max-width: 640px) {
+            .form-add .field {
+                grid-template-columns: 1fr;
+                row-gap: 6px;
+            }
+        }
+        .field-error {
+            color: #ffb4a3;
+            font-size: 12px;
+            margin-top: 4px;
+            min-height: 1.2em; /* reserves space even when empty */
+            }
+        .is-invalid input,
+        .is-invalid select,
+        .is-invalid textarea {
+            border-color: #b23a3a;
+            outline: none;
+            }
+        `,this.shadowRoot.append(m,a)}connectedCallback(){this._wireEvents(),this._loadAnimals(),this._renderAdoptedList()}_clearNode(a){for(;a.firstChild;)a.removeChild(a.firstChild)}_createPanel(a){const e=document.createElement("section");e.className="panel";const n=document.createElement("h2");return n.textContent=a,e.appendChild(n),e}_createRow(a){const e=document.createElement("div");e.className="row";const n=Array.isArray(a)?a:[a];for(const t of n)t&&e.appendChild(t);return e}_createButton(a,e){const n=document.createElement("button");return n.textContent=a,n.className="btn"+(e?" "+e:""),n}_createLabeledInput(a,e,n){const t=document.createElement("label");t.textContent=a;const s=document.createElement("input");return s.type=e,s.name=n,t.appendChild(s),t}_createLabeledSelect(a,e,n){const t=document.createElement("label");t.textContent=a;const s=document.createElement("select");return s.name=e,n.forEach(r=>{const o=document.createElement("option");o.value=r,o.textContent=r||"Select...",s.appendChild(o)}),t.appendChild(s),t}async _loadAnimals(){try{const a=await fetch(`${L}/animals`,{cache:"no-store"});if(!a.ok)throw new Error(`Fetch failed: ${a.status}`);const e=await a.json();console.log("Fetched data:",e),this.zooAnimals=Array.isArray(e.animals)?e.animals:e,this._populateDropdown()}catch(a){console.error("Animal load error:",a),this.animalCardContainer.textContent="Could not load animals."}}_populateDropdown(){this._clearNode(this.selectedAnimalDropdown);const a=document.createElement("option");a.value="",a.textContent="- Select an Animal -",this.selectedAnimalDropdown.appendChild(a),this.zooAnimals.forEach(e=>{const n=document.createElement("option");n.value=e.name,n.textContent=e.name,this.selectedAnimalDropdown.appendChild(n)})}_field(a,e,n="input",t={}){const s=document.createElement("div");s.className="field";const r=document.createElement("label");r.setAttribute("for",e),r.textContent=a;const o=document.createElement(n);o.name=e,o.id=e,Object.entries(t).forEach(([i,d])=>o.setAttribute(i,d));const l=document.createElement("div");return l.className="field-error",l.id=`${e}-error`,l.setAttribute("aria-live","polite"),o.setAttribute("aria-describedby",l.id),s.append(r,o,l),s}_getField(a){const e=this.addAnimalForm.querySelector(`[name="${a}"]`),n=e?.closest(".field"),t=n?.querySelector(".field-error");return{wrap:n,control:e,error:t}}_setError(a,e){const{wrap:n,control:t,error:s}=this._getField(a);n&&(e?(n.classList.add("is-invalid"),t?.setAttribute("aria-invalid","true"),s&&(s.textContent=e)):(n.classList.remove("is-invalid"),t?.removeAttribute("aria-invalid"),s&&(s.textContent="")))}_validateField(a){const{control:e}=this._getField(a);if(!e)return!0;const n=e.tagName.toLowerCase(),t=e.getAttribute("type")||"";(n==="input"&&(t==="text"||t==="url")||n==="textarea")&&(e.value=e.value.trim());const s=e.validity,r={species:"Species",class:"Class",conservationStatus:"Conservation Status",habitat:"Habitat",img:"Image URL",description:"Description",more:"Fun Fact"};let o="";if(s.valueMissing?o=`${r[e.name]||"This field"} is required.`:s.tooShort?o=`Please enter at least ${e.getAttribute("minlength")} characters.`:s.tooLong?o=`Please use at most ${e.getAttribute("maxlength")} characters.`:s.typeMismatch&&e.type==="url"?o="Please enter a valid URL (https://…).":s.patternMismatch&&(["species","class","habitat"].includes(e.name)?o=`${r[e.name]} must contain letters only (you may use spaces or hyphens) and at least 2 letters.`:o="Please match the requested format."),!o&&e.name==="conservationStatus"&&e.value===""&&(o="Please select a conservation status."),!o&&e.name==="img"&&e.value){const l=e.value.trim();if(!/^https:\/\//i.test(l))o="Image URL must start with https://";else{let i=l;try{i=new URL(l).pathname}catch{}/\.(png|jpe?g|gif)$/i.test(i)||(o="Please use a URL ending in .png, .jpg, .jpeg, or .gif")}}return this._setError(e.name,o),!o}_validateForm(){const a=["species","class","conservationStatus","habitat","img","description","more"];let e=null,n=!0;for(const t of a){const s=this._validateField(t);!s&&!e&&(e=this._getField(t).control),n=n&&s}return!n&&e&&e.focus(),n}_attachValidation(){this.addAnimalForm.querySelectorAll("input, select, textarea").forEach(e=>{e.addEventListener("blur",()=>this._validateField(e.name)),e.addEventListener("input",()=>{e.checkValidity()&&this._setError(e.name,"")}),e.tagName.toLowerCase()==="select"&&e.addEventListener("change",()=>this._validateField(e.name))})}_wireEvents(){this.selectedAnimalDropdown.addEventListener("change",async()=>{const a=this.zooAnimals.find(e=>e.name===this.selectedAnimalDropdown.value);a&&this._renderCard(a)}),this.searchQueryInput.addEventListener("input",async()=>{const a=(this.searchQueryInput.value||"").trim().toLowerCase();if(this._clearNode(this.searchResultsList),!a)return;const e=t=>String(t??"").toLowerCase(),n=this.zooAnimals.filter(t=>[t.name,t.type,t.class,t.species,t.habitat,t.conservationStatus].some(r=>e(r).includes(a)));if(n.length===0){const t=document.createElement("li");t.textContent="No matches",t.className="muted",this.searchResultsList.appendChild(t);return}for(const t of n){const s=document.createElement("li"),r=t?.name??"Unknown",o=t?.type??t?.class??t?.species??"";s.textContent=o?`${r} (${o})`:r,s.addEventListener("click",()=>this._renderCard(t)),this.searchResultsList.appendChild(s)}}),this.addAnimalForm.addEventListener("submit",async a=>{if(a.preventDefault(),!this._validateForm())return;const e=new FormData(this.addAnimalForm),n={name:e.get("species"),type:e.get("class"),conservationStatus:e.get("conservationStatus"),habitat:e.get("habitat"),image:e.get("img")||"images/comingSoon.png",description:e.get("description"),funFact:e.get("more")};try{const t=await fetch(`${L}/animals`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(n)});if(!t.ok)throw new Error(`Create failed: ${t.status}`);const s=await t.json();this.zooAnimals.push(s),this._populateDropdown(),this.formMessage.textContent="Animal added!",this.addAnimalForm.reset(),["species","class","conservationStatus","habitat","img","description","more"].forEach(r=>this._setError(r,"")),setTimeout(()=>this.formMessage.textContent="",4e3)}catch(t){console.error(t),this.formMessage.textContent="Error: could not save animal."}}),this.phoneForm&&this.phoneForm.addEventListener("submit",a=>this._handlePhoneSubmit(a))}_renderCard(a){this._clearNode(this.animalCardContainer);const e=document.createElement("div");e.className="animal-card";const n=document.createElement("img");n.src=a.image,n.alt=a.name;const t=document.createElement("h3");t.textContent=a.name;const s=document.createElement("p");s.textContent=`Class: ${a.type}`;const r=document.createElement("p");r.textContent=`Status: ${a.conservationStatus}`;const o=document.createElement("p");o.textContent=`Habitat: ${a.habitat}`;const l=document.createElement("p");l.textContent=a.description||"";const i=this._createButton("Adopt","primary");i.addEventListener("click",()=>{N(a.name,(d,p,f)=>{this._renderAdoptedList()})}),e.append(n,t,s,r,o,l,i),this.animalCardContainer.appendChild(e)}_renderAdoptedList(){if(this._clearNode(this.adoptedAnimalsList),!E||E.size===0){const a=document.createElement("li");a.className="muted",a.textContent="No adopted animals yet.",this.adoptedAnimalsList.appendChild(a);return}for(const a of E){const e=document.createElement("li"),n=document.createElement("div");n.className="adopt-info";const t=document.createElement("span");t.textContent=a;const s=P(a),r=document.createElement("span");r.className="adopt-phone",r.textContent=s?`Phone: ${s}`:"",n.append(t),s&&n.append(r);const o=document.createElement("button");o.type="button",o.className="btn danger sm",o.textContent="Remove",o.setAttribute("aria-label",`Remove adoption for ${a}`),o.addEventListener("click",()=>{E.delete(a),w.delete(a),this._renderAdoptedList()}),e.append(n,o),this.adoptedAnimalsList.appendChild(e)}}}customElements.define("animal-exhibit",I);
