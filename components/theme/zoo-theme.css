@@ -1,0 +1,62 @@
+/* Zoo Green Theme - Applied to all pages */
+
+/* Body styling with green gradient */
+body {
+    background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 50%, #a5d6a7 100%);
+    min-height: 100vh;
+}
+
+body .container {
+    background: transparent;
+    padding: 2rem 1rem;
+}
+
+/* Navigation bar green theme */
+site-nav .navbar {
+    background: linear-gradient(135deg, #2e7d32 0%, #4caf50 100%);
+    border-bottom: 3px solid #1b5e20;
+    box-shadow: 0 4px 12px rgba(46, 125, 50, 0.3);
+}
+
+site-nav .brand {
+    color: #ffffff;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+site-nav a {
+    color: #ffffff;
+}
+
+site-nav a:hover,
+site-nav a:focus-visible {
+    color: #fff9c4;
+    background: rgba(255, 255, 255, 0.2);
+}
+
+site-nav a.active {
+    color: #fff9c4;
+    background: rgba(255, 255, 255, 0.25);
+    font-weight: 700;
+    border-bottom: 2px solid #fff9c4;
+}
+
+/* Welcome message styling */
+#welcome {
+    background: linear-gradient(135deg, #ffffff 0%, #f1f8e9 100%);
+    border: 2px solid #a5d6a7;
+    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.2);
+}
+
+#welcome strong {
+    color: #2e7d32;
+}
+
+/* Contact intro styling */
+#contact-intro {
+    background: linear-gradient(135deg, #ffffff 0%, #f1f8e9 100%);
+    border: 2px solid #a5d6a7;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.2);
+}
+

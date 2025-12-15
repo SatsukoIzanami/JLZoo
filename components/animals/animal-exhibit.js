@@ -5,7 +5,6 @@ import { showAdoptionModal, adoptedAnimals, adoptionContacts, getDisplayName, ge
 class AnimalExhibit extends HTMLElement {
     constructor() {
         super();
-        this.attachShadow({mode: 'open'});
         
         // internal state
         this.zooAnimals = [];
@@ -14,7 +13,7 @@ class AnimalExhibit extends HTMLElement {
         const wrapper = document.createElement('div');
         wrapper.className = 'exhibit-wrapper';
 
-        // dropdown list
+            // dropdown list section    
         const browsePanel = this._createPanel('Browse by Animal');
         this.selectedAnimalDropdown = document.createElement('select');
         this.selectedAnimalDropdown.setAttribute('aria-label', 'Animal Dropdown');
@@ -24,6 +23,12 @@ class AnimalExhibit extends HTMLElement {
 
         const browseRow = this._createRow(this.selectedAnimalDropdown);
         browsePanel.append(browseRow, this.animalCardContainer);
+
+        // adopted animals section
+        const adoptedPanel = this._createPanel('Adopted Animals');
+        this.adoptedAnimalsList = document.createElement('ul');
+        this.adoptedAnimalsList.className = 'adopted-list';
+        adoptedPanel.append(this.adoptedAnimalsList);
 
         // search section
         const searchPanel = this._createPanel('Search the Zoo');
@@ -40,14 +45,15 @@ class AnimalExhibit extends HTMLElement {
         const addPanel = this._createPanel('Add an Animal');
 
         this.addAnimalForm = document.createElement('form');
-        this.addAnimalForm.className = 'form-add';   // uses grid CSS
+        this.addAnimalForm.className = 'form-add';
         this.addAnimalForm.method = 'post';
-        this.addAnimalForm.action = 'javascript:void(0)'; // Prevent default form submission
+        this.addAnimalForm.action = 'javascript:void(0)';
 
         this.formMessage = document.createElement('p');
         this.formMessage.className = 'form-message';
 
-        const lettersPattern = '^(?:[A-Za-z]{2,}|[A-Za-z][ \\-][A-Za-z])(?:[ \\-][A-Za-z]+)*$';  // words of letters, separated by space or hyphen
+        // pattern for letters with spaces or hyphens
+        const lettersPattern = '^(?:[A-Za-z]{2,}|[A-Za-z][ \\-][A-Za-z])(?:[ \\-][A-Za-z]+)*$';
 
         const speciesField = this._field('Species *', 'species', 'input', {
         type: 'text', required: '', minlength: '2', maxlength: '40',
@@ -63,7 +69,7 @@ class AnimalExhibit extends HTMLElement {
         required: ''
         });
 
-        // populate select options
+        // populate conservation status options
         const statusSelect = statusField.querySelector('select');
         ['', 'Least Concern', 'Near Threatened', 'Vulnerable', 'Endangered', 'Critically Endangered']
         .forEach(txt => {
@@ -90,7 +96,7 @@ class AnimalExhibit extends HTMLElement {
         type: 'text', placeholder: 'Optional', maxlength: '120'
         });
 
-        // buttons
+        // form buttons
         const addButton = this._createButton('Add to Zoo', 'primary');
         addButton.type = 'submit';
 
@@ -99,7 +105,7 @@ class AnimalExhibit extends HTMLElement {
 
         const buttonRow = this._createRow([addButton, resetButton]);
 
-        // assemble form
+        // assemble form fields
         this.addAnimalForm.append(
         speciesField,
         classField,
@@ -115,111 +121,11 @@ class AnimalExhibit extends HTMLElement {
         addPanel.append(this.addAnimalForm);
         this._attachValidation();
 
-        // adopt section
-        const adoptedPanel = this._createPanel('Adopted Animals');
-        this.adoptedAnimalsList = document.createElement('ul');
-        this.adoptedAnimalsList.className = 'adopted-list';
-        adoptedPanel.append(this.adoptedAnimalsList);
+        // combine all panels
+        wrapper.append(browsePanel, adoptedPanel, searchPanel, addPanel);
 
-        // put panels together
-        wrapper.append(browsePanel, searchPanel, addPanel, adoptedPanel);
-
-        // scoped CSS
-        const style = document.createElement('style');
-        style.textContent = `
-        :host { display: block; font-family: system-ui, sans-serif; color: #f0f4ff; --label-w: 160px; --field-w: 420px;}
-        .exhibit-wrapper { display: grid; gap: 20px; }
-        .panel { 
-            background: #101820; 
-            border-radius: 12px; 
-            padding: 16px; 
-            box-shadow: 0 4px 12px rgba(0,0,0,.3); 
-            }
-        .panel h2 { margin-top: 0; font-size: 1.25rem; }
-        .row { display: flex; gap: 10px; flex-wrap: wrap; margin: 10px 0; }
-        .card-container { margin-top: 12px; }
-        .results-list, .adopted-list { list-style: none; padding: 0; margin: 0; }
-        .results-list li { 
-            background: #182635; 
-            border-radius: 8px; 
-            padding: 6px 10px; 
-            margin-top: 6px; 
-            cursor: pointer; 
-            }
-        .adopted-list li {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 8px;
-            padding: 6px 8px;
-            border: 1px solid var(--border, #1a2440);
-            border-radius: 8px;
-            margin: 6px 0;
-            background: #182635;
-        }
-        .adopt-info {
-            flex: 1 1 auto;
-            display: flex;
-            flex-direction: column;
-        }
-        .adopt-phone {
-            font-size: 11px;
-            opacity: 0.8;
-        }
-        .btn.sm { padding: 4px 8px; font-size: 12px; border-radius: 8px; }
-        .btn.danger { background: #4a1111; border-color: #6b1b1b; }
-        .btn.danger:hover { background: #5a1515; }
-        .btn { padding: 8px 14px; border-radius: 8px; cursor: pointer; border: none; }
-        .btn.primary { background: #5aa2ff; color: #000; margin-left: 1rem;}
-        .btn.ghost { background: transparent; border: 1px solid #5aa2ff; }
-        .form-message { min-height: 1em; font-size: 0.9rem; color: #53e0c1; }
-        /* Add-form layout */
-        .form-add {
-        display: grid;
-        row-gap: 12px;
-        }
-        .form-add .field {
-        display: grid;
-        grid-template-columns: var(--label-w) minmax(0, var(--field-w));
-        align-items: center;
-        column-gap: 16px;
-        }
-        .form-add label {
-        font-weight: 600;
-        }
-        /* inputs look tidy */
-        .form-add input,
-        .form-add select,
-        .form-add textarea {
-        width: 100%;
-        padding: 8px 10px;
-        border: 1px solid var(--border, #1a2440);
-        background: #0b1223;
-        color: inherit;
-        border-radius: 10px;
-        }
-        /* stack label above input on small screens */
-        @media (max-width: 640px) {
-            .form-add .field {
-                grid-template-columns: 1fr;
-                row-gap: 6px;
-            }
-        }
-        .field-error {
-            color: #ffb4a3;
-            font-size: 12px;
-            margin-top: 4px;
-            min-height: 1.2em; /* reserves space even when empty */
-            }
-        .is-invalid input,
-        .is-invalid select,
-        .is-invalid textarea {
-            border-color: #b23a3a;
-            outline: none;
-            }
-        `;
-
-    this.shadowRoot.append(style, wrapper);
+        // append wrapper to component
+        this.append(wrapper);
     }
 
     connectedCallback() {
@@ -228,13 +134,15 @@ class AnimalExhibit extends HTMLElement {
         this._renderAdoptedList();
     }
 
-    // utilities
+    // utility methods
+    // clear all children from a node
     _clearNode(node) {
         while (node.firstChild) {
             node.removeChild(node.firstChild);
         }
     }
 
+    // create a panel section with title
     _createPanel(titleText) {
         const panel = document.createElement('section');
         panel.className = 'panel';
@@ -244,6 +152,7 @@ class AnimalExhibit extends HTMLElement {
         return panel;
     }
 
+    // create a row container for elements
     _createRow(children) {
         const row = document.createElement('div');
         row.className = 'row';
@@ -252,6 +161,7 @@ class AnimalExhibit extends HTMLElement {
         return row;
     }
 
+    // create a button with optional variant class
     _createButton(text, variant) {
         const btn = document.createElement('button');
         btn.textContent = text;
@@ -259,6 +169,7 @@ class AnimalExhibit extends HTMLElement {
         return btn;        
     }
 
+    // create labeled input field
     _createLabeledInput(labelText, type, name) {
         const label = document.createElement('label');
         label.textContent = labelText;
@@ -269,6 +180,7 @@ class AnimalExhibit extends HTMLElement {
         return label;
     }
 
+    // create labeled select dropdown
     _createLabeledSelect(labelText, name, options) {
         const label = document.createElement('label');
         label.textContent = labelText;
@@ -284,7 +196,7 @@ class AnimalExhibit extends HTMLElement {
         return label;
     }
 
-    // data load
+    // load animals from api
     async _loadAnimals() {
         try {
             const response = await fetch(`${API_BASE}/animals`, { cache: 'no-store' });
@@ -303,6 +215,7 @@ class AnimalExhibit extends HTMLElement {
         }
     }
 
+    // populate dropdown with animal names
     _populateDropdown() {
         this._clearNode(this.selectedAnimalDropdown);
         const placeholder = document.createElement('option');
@@ -318,6 +231,7 @@ class AnimalExhibit extends HTMLElement {
         });
     }
 
+    // create form field with label control and error display
     _field(labelText, aName, tag = 'input', attributes = {}) {
         const wrap = document.createElement('div');
         wrap.className = 'field';
@@ -331,7 +245,7 @@ class AnimalExhibit extends HTMLElement {
         control.id = aName;
         Object.entries(attributes).forEach(([k, v]) => control.setAttribute(k, v));
 
-        // inline error slot
+        // error message container
         const err = document.createElement('div');
         err.className = 'field-error';
         err.id = `${aName}-error`;
@@ -343,14 +257,15 @@ class AnimalExhibit extends HTMLElement {
         return wrap;
     }
 
+    // get field elements by name
     _getField(name) {
-        // returns {wrap, control, error}
         const control = this.addAnimalForm.querySelector(`[name="${name}"]`);
         const wrap = control?.closest('.field');
         const error = wrap?.querySelector('.field-error');
         return { wrap, control, error };
     }
 
+    // set or clear error message for a field
     _setError(name, msg) {
         const { wrap, control, error } = this._getField(name);
         if (!wrap) return;
@@ -365,21 +280,22 @@ class AnimalExhibit extends HTMLElement {
         }
     }
 
+    // validate a single form field
     _validateField(name) {
         const { control } = this._getField(name);
         if (!control) return true;
 
-        // Trim value for text-like inputs before validating length/patterns
+        // trim text inputs before validation
         const tag = control.tagName.toLowerCase();
         const type = control.getAttribute('type') || '';
         if (tag === 'input' && (type === 'text' || type === 'url') || tag === 'textarea') {
             control.value = control.value.trim();
         }
 
-        // Built-in validity first
+        // check built in validity
         const v = control.validity;
 
-        // Custom messages per field
+        // field name mapping for error messages
         const labelMap = {
             species: 'Species',
             class: 'Class',
@@ -390,6 +306,7 @@ class AnimalExhibit extends HTMLElement {
             more: 'Fun Fact'
         };
 
+        // build error message based on validation state
         let msg = '';
         if (v.valueMissing) msg = `${labelMap[control.name] || 'This field'} is required.`;
         else if (v.tooShort) msg = `Please enter at least ${control.getAttribute('minlength')} characters.`;
@@ -403,19 +320,20 @@ class AnimalExhibit extends HTMLElement {
             }
         }
 
-        // for the select, ensure user didn’t leave the placeholder
+        // check conservation status was selected
         if (!msg && control.name === 'conservationStatus' && control.value === '') {
             msg = 'Please select a conservation status.';
         }
 
+        // validate image url format
         if (!msg && control.name === 'img' && control.value) {
             const val = control.value.trim();
 
-            // 1) must start with https://  (case-insensitive, just in case)
+            // must start with https
             if (!/^https:\/\//i.test(val)) {
                 msg = 'Image URL must start with https://';
             } else {
-            // 2) must end with a common image extension (ignore query/hash)
+            // must end with image extension
             let path = val;
             try { path = new URL(val).pathname; } catch { /* if invalid, built-in validity already caught it */ }
 
@@ -430,6 +348,7 @@ class AnimalExhibit extends HTMLElement {
         return !msg;
     }
 
+    // validate all form fields
     _validateForm() {
         const names = ['species','class','conservationStatus','habitat','img','description','more'];
         let firstInvalid = null;
@@ -443,13 +362,13 @@ class AnimalExhibit extends HTMLElement {
         return ok;
     }
 
+    // attach validation listeners to form fields
     _attachValidation() {
-        // Live validation on blur and input
         const controls = this.addAnimalForm.querySelectorAll('input, select, textarea');
         controls.forEach(ctrl => {
             ctrl.addEventListener('blur', () => this._validateField(ctrl.name));
             ctrl.addEventListener('input', () => {
-                // Clear the error as soon as it becomes valid
+                // clear error when field becomes valid
                 if (ctrl.checkValidity()) this._setError(ctrl.name, '');
             });
             if (ctrl.tagName.toLowerCase() === 'select') {
@@ -458,22 +377,26 @@ class AnimalExhibit extends HTMLElement {
         });
     }
 
+    // wire up event listeners
     _wireEvents() {
+        // dropdown change handler
         this.selectedAnimalDropdown.addEventListener('change', async () => {
             const selected = this.zooAnimals.find(a => a.name === this.selectedAnimalDropdown.value);
             if (selected) this._renderCard(selected);
         });
 
-        // Search across name, type, class, species, habitat, status, description
+        // search input handler
         this.searchQueryInput.addEventListener('input', async () => {
         const q = (this.searchQueryInput.value || '').trim().toLowerCase();
         this._clearNode(this.searchResultsList);
 
-        // If empty query, bail gracefully (keeps list cleared)
+        // return early if search is empty
         if (!q) return;
 
+        // convert value to lowercase for comparison
         const hay = v => String(v ?? '').toLowerCase();
 
+        // filter animals by search query
         const matches = this.zooAnimals.filter(a => {
             const fields = [
             a.name, a.type, a.class, a.species,
@@ -482,6 +405,7 @@ class AnimalExhibit extends HTMLElement {
             return fields.some(f => hay(f).includes(q));
         });
 
+        // show no matches message
         if (matches.length === 0) {
             const li = document.createElement('li');
             li.textContent = 'No matches';
@@ -490,6 +414,7 @@ class AnimalExhibit extends HTMLElement {
             return;
         }
 
+        // display search results
         for (const animal of matches) {
             const li = document.createElement('li');
             const name = animal?.name ?? 'Unknown';
@@ -500,6 +425,7 @@ class AnimalExhibit extends HTMLElement {
         }
         });
 
+        // form submit handler
         this.addAnimalForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             e.stopPropagation();
@@ -507,7 +433,7 @@ class AnimalExhibit extends HTMLElement {
 
             const formData = new FormData(this.addAnimalForm);
             
-            // Build animal object, ensuring required fields are present
+            // build animal object from form data
             const newAnimal = {
                 name: formData.get('species')?.trim(),
                 type: formData.get('class')?.trim(),
@@ -516,7 +442,7 @@ class AnimalExhibit extends HTMLElement {
                 description: formData.get('description')?.trim(),
             };
 
-            // Add optional fields only if they have values
+            // add optional image url
             const imgValue = formData.get('img')?.trim();
             if (imgValue) {
                 newAnimal.image = imgValue;
@@ -524,12 +450,13 @@ class AnimalExhibit extends HTMLElement {
                 newAnimal.image = 'images/comingSoon.png';
             }
 
+            // add optional fun fact
             const funFactValue = formData.get('more')?.trim();
             if (funFactValue) {
                 newAnimal.funFact = funFactValue;
             }
 
-            // Validate required fields are not empty
+            // validate required fields
             const requiredFields = ['name', 'type', 'conservationStatus', 'habitat', 'description'];
             for (const field of requiredFields) {
                 if (!newAnimal[field] || newAnimal[field].trim() === '') {
@@ -552,12 +479,11 @@ class AnimalExhibit extends HTMLElement {
                     throw new Error(`Create failed: ${res.status} - ${errorText}`);
                 }
                 
-                // Handle 204 No Content response (server doesn't return body)
+                // handle 204 no content response
                 let saved = null;
                 if (res.status === 204) {
-                    // For 204, reload the animals list to get the newly created animal with its ID
+                    // reload animals list for 204 response
                     await this._loadAnimals();
-                    // Find the newly added animal (it should be the last one or match our data)
                     saved = this.zooAnimals.find(a => a.name === newAnimal.name && a.type === newAnimal.type) || newAnimal;
                 } else {
                     saved = await res.json();
@@ -565,16 +491,18 @@ class AnimalExhibit extends HTMLElement {
                     this._populateDropdown();
                 }
                 
-                // Only update dropdown if we didn't reload
+                // update dropdown if not already updated
                 if (res.status !== 204) {
                     this._populateDropdown();
                 }
 
+                // show success message and reset form
                 this.formMessage.textContent = 'Animal added!';
+                // reset form
                 this.addAnimalForm.reset();
                 ['species','class','conservationStatus','habitat','img','description','more']
                     .forEach(n => this._setError(n, ''));
-                setTimeout(() => (this.formMessage.textContent = ''), 4000);
+                setTimeout(() => (this.formMessage.textContent = ''), 4000); // clear message after 4 seconds
             } catch (err) {
                 console.error(err);
                 this.formMessage.textContent = 'Error: could not save animal.';
@@ -582,6 +510,7 @@ class AnimalExhibit extends HTMLElement {
         });
     }
 
+    // render animal card in display area
     _renderCard(animal) {
         this._clearNode(this.animalCardContainer);
 
@@ -610,18 +539,22 @@ class AnimalExhibit extends HTMLElement {
         const adoptBtn = this._createButton('Adopt', 'primary');
         adoptBtn.addEventListener('click', () => {
             showAdoptionModal(animal.name, (originalName, phoneNumber, customName) => {
-                // Callback after successful adoption - refresh the adopted list
+                // refresh adopted list after adoption
                 this._renderAdoptedList();
             });
         });
 
+        // append card elements
         card.append(img, nameEl, typeEl, statusEl, habitatEl, descEl, adoptBtn);
+        // append card to container
         this.animalCardContainer.appendChild(card);
     }
 
+    // render list of adopted animals
     _renderAdoptedList() {
         this._clearNode(this.adoptedAnimalsList);
 
+        // show message if no adopted animals
         if (!adoptedAnimals || adoptedAnimals.size === 0) {
             const li = document.createElement('li');
             li.className = 'muted';
@@ -630,6 +563,7 @@ class AnimalExhibit extends HTMLElement {
             return;
         }
 
+        // render each adopted animal
         for (const adoptedName of adoptedAnimals) {
             const li = document.createElement('li');
 
@@ -639,14 +573,17 @@ class AnimalExhibit extends HTMLElement {
             const label = document.createElement('span');
             label.textContent = adoptedName;
 
+            // get and display contact phone
             const phone = getAdoptionContact(adoptedName);
             const phoneEl = document.createElement('span');
             phoneEl.className = 'adopt-phone';
             phoneEl.textContent = phone ? `Phone: ${phone}` : '';
 
+            // append info elements
             info.append(label);
             if (phone) info.append(phoneEl);
 
+            // remove button
             const btn = document.createElement('button');
             btn.type = 'button';
             btn.className = 'btn danger sm';
@@ -658,7 +595,9 @@ class AnimalExhibit extends HTMLElement {
                 this._renderAdoptedList();
             });
 
+            // append list item elements
             li.append(info, btn);
+            // append list item to container
             this.adoptedAnimalsList.appendChild(li);
         }
     }
