@@ -7,15 +7,28 @@ const adoptionNames = new Map(); // original name -> custom name
 let pendingAdoption = null;
 
 // --------- Adoption Logic ----------
+// Helper function to capitalize first letter
+function capitalizeFirst(str) {
+    if (!str) return str;
+    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+}
+
 // mark an animal as adopted and saves contact info
 function markAdopted(originalName, phoneNumber, customName) {
-    const adoptedName = customName?.trim() || originalName;
+    let adoptedName;
+    if (customName?.trim()) {
+        // Format as "<customName> the <originalName>"
+        const custom = customName.trim();
+        const original = capitalizeFirst(originalName);
+        adoptedName = `${capitalizeFirst(custom)} the ${original}`;
+        adoptionNames.set(originalName, adoptedName);
+    } else {
+        // No custom name, use original
+        adoptedName = capitalizeFirst(originalName);
+    }
     adoptedAnimals.add(adoptedName);
     if (phoneNumber) {
         adoptionContacts.set(adoptedName, phoneNumber);
-    }
-    if (customName?.trim() && customName.trim() !== originalName) {
-        adoptionNames.set(originalName, customName.trim());
     }
 }
 
@@ -42,13 +55,31 @@ function getAdoptionContact(animalName) {
 }
 
 // getter for the custom name for an adopted animal if one was set
+// Returns the full formatted name like "Bessie the Buffalo" or null if no custom name
 function getAdoptionName(originalName) {
-    return adoptionNames.get(originalName);
+    return adoptionNames.get(originalName) || null;
 }
 
 // getter for the display name for an animal (custom name if set, otherwise original)
 function getDisplayName(originalName) {
-    return adoptionNames.get(originalName) || originalName;
+    // If there's a custom name mapping, return it (already formatted as "<custom> the <original>")
+    if (adoptionNames.has(originalName)) {
+        return adoptionNames.get(originalName);
+    }
+    // Check if the original name (capitalized) is in adoptedAnimals (adopted without custom name)
+    const capitalized = capitalizeFirst(originalName);
+    if (adoptedAnimals.has(capitalized)) {
+        return capitalized;
+    }
+    // Check if there's a formatted name in adoptedAnimals that matches this original
+    for (const adoptedName of adoptedAnimals) {
+        // Check if this adopted name ends with " the <originalName>"
+        if (adoptedName.endsWith(` the ${capitalized}`)) {
+            return adoptedName;
+        }
+    }
+    // Not adopted, return original name
+    return originalName;
 }
 
 // setter for the currently pending adoption animal (to trigger an adoption modal, etc)
@@ -242,12 +273,12 @@ function showAdoptionModal(animalName, onAdoptCallback) {
             return;
         }
         
-        const finalName = customName || animalName;
-        
         markAdopted(animalName, phone, customName);
         setPendingAdoption(null);
+        // Get the formatted display name after marking as adopted
+        const displayName = getDisplayName(animalName);
         if (onAdoptCallback) {
-            onAdoptCallback(animalName, phone, finalName);
+            onAdoptCallback(animalName, phone, displayName);
         }
         closeModal();
     };

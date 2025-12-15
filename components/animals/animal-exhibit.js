@@ -537,13 +537,8 @@ class AnimalExhibit extends HTMLElement {
             nameEl.appendChild(adoptedBadge);
         }
         
-        // Show original name if custom name was set
-        let originalNameEl = null;
-        if (adopted && customName && customName !== animal.name) {
-            originalNameEl = document.createElement('p');
-            originalNameEl.style.cssText = 'color: #6c757d; font-size: 0.9em; font-style: italic; margin-top: -4px; margin-bottom: 8px;';
-            originalNameEl.textContent = `Originally: ${animal.name}`;
-        }
+        // Note: If customName is set, it already includes the format "<custom> the <original>"
+        // so we don't need to show the original name separately
         
         const typeEl = document.createElement('p');
         typeEl.textContent = `Class: ${animal.type}`;
@@ -574,10 +569,7 @@ class AnimalExhibit extends HTMLElement {
         }
 
         // append card elements
-        const cardElements = [img, nameEl];
-        if (originalNameEl) cardElements.push(originalNameEl);
-        cardElements.push(typeEl, statusEl, habitatEl, descEl, adoptBtn);
-        card.append(...cardElements);
+        card.append(img, nameEl, typeEl, statusEl, habitatEl, descEl, adoptBtn);
         // append card to container
         this.animalCardContainer.appendChild(card);
     }
@@ -624,6 +616,14 @@ class AnimalExhibit extends HTMLElement {
             btn.addEventListener('click', () => {
                 adoptedAnimals.delete(adoptedName);
                 adoptionContacts.delete(adoptedName);
+                // Also remove from adoptionNames if there's a mapping
+                // Find the original name that maps to this adopted name
+                for (const [originalName, formattedName] of adoptionNames.entries()) {
+                    if (formattedName === adoptedName) {
+                        adoptionNames.delete(originalName);
+                        break;
+                    }
+                }
                 this._renderAdoptedList();
             });
 
