@@ -1,6 +1,6 @@
 // components/animals/animal-exhibit.js
 import { API_BASE } from '../config.js';
-import { showAdoptionModal, adoptedAnimals, adoptionContacts, getDisplayName, getAdoptionContact, markAdopted, resetAdoptions, isAdopted, getAdoptionName } from './adoption.js';
+import { showAdoptionModal, adoptedAnimals, adoptionContacts, adoptionNames, getDisplayName, getAdoptionContact, markAdopted, resetAdoptions, isAdopted, getAdoptionName } from './adoption.js';
 
 class AnimalExhibit extends HTMLElement {
     constructor() {
@@ -552,6 +552,33 @@ class AnimalExhibit extends HTMLElement {
         const descEl = document.createElement('p');
         descEl.textContent = animal.description || '';
 
+        // Fun fact section
+        const funFactContainer = document.createElement('div');
+        funFactContainer.style.cssText = 'margin-top: 12px; padding: 12px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #5aa2ff; display: none;';
+        
+        const funFactLabel = document.createElement('strong');
+        funFactLabel.textContent = 'Fun Fact: ';
+        funFactLabel.style.cssText = 'color: #1a4d7a; display: block; margin-bottom: 4px;';
+        
+        const funFactEl = document.createElement('p');
+        funFactEl.textContent = animal.funFact || '';
+        funFactEl.style.cssText = 'color: #495057; margin: 0; font-style: italic;';
+        
+        funFactContainer.append(funFactLabel, funFactEl);
+
+        // Fun fact toggle button
+        let funFactBtn = null;
+        if (animal.funFact) {
+            funFactBtn = this._createButton('Show Fun Fact', 'ghost');
+            funFactBtn.style.cssText += 'margin-right: 8px;';
+            let funFactVisible = false;
+            funFactBtn.addEventListener('click', () => {
+                funFactVisible = !funFactVisible;
+                funFactContainer.style.display = funFactVisible ? 'block' : 'none';
+                funFactBtn.textContent = funFactVisible ? 'Hide Fun Fact' : 'Show Fun Fact';
+            });
+        }
+
         const adoptBtn = this._createButton(adopted ? 'Already Adopted' : 'Adopt', adopted ? 'ghost' : 'primary');
         if (adopted) {
             adoptBtn.disabled = true;
@@ -568,8 +595,14 @@ class AnimalExhibit extends HTMLElement {
             });
         }
 
+        // Button container for fun fact and adopt buttons
+        const buttonContainer = document.createElement('div');
+        buttonContainer.style.cssText = 'display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap;';
+        if (funFactBtn) buttonContainer.appendChild(funFactBtn);
+        buttonContainer.appendChild(adoptBtn);
+
         // append card elements
-        card.append(img, nameEl, typeEl, statusEl, habitatEl, descEl, adoptBtn);
+        card.append(img, nameEl, typeEl, statusEl, habitatEl, descEl, funFactContainer, buttonContainer);
         // append card to container
         this.animalCardContainer.appendChild(card);
     }
@@ -614,17 +647,39 @@ class AnimalExhibit extends HTMLElement {
             btn.textContent = 'Remove';
             btn.setAttribute('aria-label', `Remove adoption for ${adoptedName}`);
             btn.addEventListener('click', () => {
-                adoptedAnimals.delete(adoptedName);
-                adoptionContacts.delete(adoptedName);
-                // Also remove from adoptionNames if there's a mapping
-                // Find the original name that maps to this adopted name
+                // Find the original name that maps to this adopted name before removing
+                let originalNameToRefresh = null;
                 for (const [originalName, formattedName] of adoptionNames.entries()) {
                     if (formattedName === adoptedName) {
+                        originalNameToRefresh = originalName;
                         adoptionNames.delete(originalName);
                         break;
                     }
                 }
+                // If no mapping found, check if adoptedName matches a capitalized original name
+                if (!originalNameToRefresh) {
+                    for (const animal of this.zooAnimals) {
+                        const capitalized = animal.name.charAt(0).toUpperCase() + animal.name.slice(1).toLowerCase();
+                        if (adoptedName === capitalized) {
+                            originalNameToRefresh = animal.name;
+                            break;
+                        }
+                    }
+                }
+                
+                adoptedAnimals.delete(adoptedName);
+                adoptionContacts.delete(adoptedName);
+                
+                // Refresh the adopted list
                 this._renderAdoptedList();
+                
+                // Refresh the card if the removed animal is currently displayed
+                if (originalNameToRefresh && this.selectedAnimalDropdown.value === originalNameToRefresh) {
+                    const selected = this.zooAnimals.find(a => a.name === originalNameToRefresh);
+                    if (selected) {
+                        this._renderCard(selected);
+                    }
+                }
             });
 
             // append list item elements

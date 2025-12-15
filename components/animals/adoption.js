@@ -35,13 +35,24 @@ function markAdopted(originalName, phoneNumber, customName) {
 // checks whether an animal is adopted.
 // Checks both the original name and if there's a custom name mapping
 function isAdopted(animalName) {
-    // Check if original name is in adoptedAnimals (no custom name case)
-    if (adoptedAnimals.has(animalName)) {
-        return true;
-    }
     // Check if there's a custom name mapping (custom name case)
     // If there's a mapping, the animal was adopted with a custom name
-    return adoptionNames.has(animalName);
+    if (adoptionNames.has(animalName)) {
+        return true;
+    }
+    // Check if original name (capitalized) is in adoptedAnimals (no custom name case)
+    const capitalized = capitalizeFirst(animalName);
+    if (adoptedAnimals.has(capitalized)) {
+        return true;
+    }
+    // Check if any formatted name in adoptedAnimals ends with " the <animalName>"
+    // This handles cases where the animal was adopted with a custom name
+    for (const adoptedName of adoptedAnimals) {
+        if (adoptedName.endsWith(` the ${capitalized}`)) {
+            return true;
+        }
+    }
+    return false;
 }
 
 // setter for the adopter's contact info for a specific animal.
@@ -460,4 +471,5 @@ export {
     showAdoptionModal,
     validatePhone
 };
+
 
