@@ -1,6 +1,6 @@
 // components/animals/animal-exhibit.js
 import { API_BASE } from '../config.js';
-import { showAdoptionModal, adoptedAnimals, adoptionContacts, getDisplayName, getAdoptionContact, markAdopted, resetAdoptions } from './adoption.js';
+import { showAdoptionModal, adoptedAnimals, adoptionContacts, getDisplayName, getAdoptionContact, markAdopted, resetAdoptions, isAdopted, getAdoptionName } from './adoption.js';
 
 class AnimalExhibit extends HTMLElement {
     constructor() {
@@ -521,8 +521,29 @@ class AnimalExhibit extends HTMLElement {
         img.src = animal.image;
         img.alt = animal.name;
 
+        // Check if animal is adopted and get display name (custom name if set, otherwise original)
+        const displayName = getDisplayName(animal.name);
+        const customName = getAdoptionName(animal.name);
+        const adopted = isAdopted(animal.name);
+
         const nameEl = document.createElement('h3');
-        nameEl.textContent = animal.name;            
+        nameEl.textContent = displayName;
+        
+        // Show adoption status if adopted
+        if (adopted) {
+            const adoptedBadge = document.createElement('span');
+            adoptedBadge.textContent = '✓ Adopted';
+            adoptedBadge.style.cssText = 'display: inline-block; margin-left: 8px; padding: 4px 8px; background: #28a745; color: white; border-radius: 4px; font-size: 0.75rem; font-weight: 600;';
+            nameEl.appendChild(adoptedBadge);
+        }
+        
+        // Show original name if custom name was set
+        let originalNameEl = null;
+        if (adopted && customName && customName !== animal.name) {
+            originalNameEl = document.createElement('p');
+            originalNameEl.style.cssText = 'color: #6c757d; font-size: 0.9em; font-style: italic; margin-top: -4px; margin-bottom: 8px;';
+            originalNameEl.textContent = `Originally: ${animal.name}`;
+        }
         
         const typeEl = document.createElement('p');
         typeEl.textContent = `Class: ${animal.type}`;
@@ -536,16 +557,27 @@ class AnimalExhibit extends HTMLElement {
         const descEl = document.createElement('p');
         descEl.textContent = animal.description || '';
 
-        const adoptBtn = this._createButton('Adopt', 'primary');
-        adoptBtn.addEventListener('click', () => {
-            showAdoptionModal(animal.name, (originalName, phoneNumber, customName) => {
-                // refresh adopted list after adoption
-                this._renderAdoptedList();
+        const adoptBtn = this._createButton(adopted ? 'Already Adopted' : 'Adopt', adopted ? 'ghost' : 'primary');
+        if (adopted) {
+            adoptBtn.disabled = true;
+            adoptBtn.style.opacity = '0.6';
+            adoptBtn.style.cursor = 'not-allowed';
+        } else {
+            adoptBtn.addEventListener('click', () => {
+                showAdoptionModal(animal.name, (originalName, phoneNumber, customName) => {
+                    // refresh card to show new name and adoption status
+                    this._renderCard(animal);
+                    // refresh adopted list after adoption
+                    this._renderAdoptedList();
+                });
             });
-        });
+        }
 
         // append card elements
-        card.append(img, nameEl, typeEl, statusEl, habitatEl, descEl, adoptBtn);
+        const cardElements = [img, nameEl];
+        if (originalNameEl) cardElements.push(originalNameEl);
+        cardElements.push(typeEl, statusEl, habitatEl, descEl, adoptBtn);
+        card.append(...cardElements);
         // append card to container
         this.animalCardContainer.appendChild(card);
     }

@@ -7,12 +7,7 @@ const adoptionNames = new Map(); // original name -> custom name
 let pendingAdoption = null;
 
 // --------- Adoption Logic ----------
-/**
- * mark an animal as adopted and saves contact info
- * @param {string} originalName the original animal name
- * @param {string} [phoneNumber]  guest phone number
- * @param {string} [customName] optional custom name for the adopted animal
- */
+// mark an animal as adopted and saves contact info
 function markAdopted(originalName, phoneNumber, customName) {
     const adoptedName = customName?.trim() || originalName;
     adoptedAnimals.add(adoptedName);
@@ -24,70 +19,49 @@ function markAdopted(originalName, phoneNumber, customName) {
     }
 }
 
-/**
- * checks whether an animal is adopted.
- * @param {string} animalName 
- * @returns {boolean}
- */
+// checks whether an animal is adopted.
+// Checks both the original name and if there's a custom name mapping
 function isAdopted(animalName) {
-    return adoptedAnimals.has(animalName);
+    // Check if original name is in adoptedAnimals (no custom name case)
+    if (adoptedAnimals.has(animalName)) {
+        return true;
+    }
+    // Check if there's a custom name mapping (custom name case)
+    // If there's a mapping, the animal was adopted with a custom name
+    return adoptionNames.has(animalName);
 }
 
-/**
- * setter for the adopter's contact info for a specific animal.
- * @param {string} animalName 
- * @param {string} phoneNumber 
- */
+// setter for the adopter's contact info for a specific animal.
 function saveAdoptionContact(animalName, phoneNumber) {
     adoptionContacts.set(animalName, phoneNumber);
 }
 
-/**
- * getter for the adopter's contact info for an animal
- * @param {string} animalName 
- * @returns {string|undefined}
- */
+// getter for the adopter's contact info for an animal
 function getAdoptionContact(animalName) {
     return adoptionContacts.get(animalName);
 }
 
-/**
- * getter for the custom name for an adopted animal if one was set
- * @param {string} originalName 
- * @returns {string|undefined}
- */
+// getter for the custom name for an adopted animal if one was set
 function getAdoptionName(originalName) {
     return adoptionNames.get(originalName);
 }
 
-/**
- * getter for the display name for an animal (custom name if set, otherwise original)
- * @param {string} originalName 
- * @returns {string}
- */
+// getter for the display name for an animal (custom name if set, otherwise original)
 function getDisplayName(originalName) {
     return adoptionNames.get(originalName) || originalName;
 }
 
-/**
- * setter for the currently pending adoption animal (to trigger an adoption modal, etc)
- * @param {string|null} animalName 
- */
+// setter for the currently pending adoption animal (to trigger an adoption modal, etc)
 function setPendingAdoption(animalName) {
     pendingAdoption = animalName;
 }
 
-/**
- * gets the currently pending adoption animal
- * @returns {string|null}
- */
+// gets the currently pending adoption animal
 function getPendingAdoption() {
     return pendingAdoption;
 }
 
-/**
- * clears all adoption state (adopted animals, contacts, names, and pending state)
- */
+// clears all adoption state (adopted animals, contacts, names, and pending state)
 function resetAdoptions() {
     adoptedAnimals.clear();
     adoptionContacts.clear();
@@ -97,12 +71,8 @@ function resetAdoptions() {
 
 // --------- Modal Logic ----------
 
-/**
- * creates and shows the adoption modal for a specific animal
- * then handles phone number submission and optional custom name
- * @param {string} animalName 
- * @param {function} onAdoptCallback  callback that receives (originalName, phoneNumber, customName)
- */
+// creates and shows the adoption modal for a specific animal
+// then handles phone number submission and optional custom name
 function showAdoptionModal(animalName, onAdoptCallback) {
     // remove any existing modal
     const prevModal = document.querySelector('.adoption-modal');
@@ -326,11 +296,9 @@ function showAdoptionModal(animalName, onAdoptCallback) {
     }
 }
 
-/**
- * validates the animal name.
- * @param {string} name 
- * @returns {{valid: boolean, message: string}}
- */
+
+// validates the animal name.
+// returns {valid: boolean, message: string}
 function validateName(name) {
     const trimmed = name.trim();
     
@@ -370,11 +338,8 @@ function validateName(name) {
     return { valid: true, message: '' };
 }
 
-/**
- * Validates a phone number with robust checks.
- * @param {string} phone 
- * @returns {{valid: boolean, message: string}}
- */
+// validates a phone number with robust checks.
+// returns {valid: boolean, message: string}
 function validatePhone(phone) {
     const rawNumber = phone.trim();
     
@@ -412,7 +377,7 @@ function validatePhone(phone) {
         return { valid: false, message: 'Phone number prefix must start with digits 2-9.' };
     }
     
-    // don't allow obviously fake combos (all zeros in exchange or line)
+    // don't allow obviously fake combos
     if (exchange === '000' || line === '0000') {
         return { valid: false, message: 'Please enter a realistic phone number, not all zeros.' };
     }
@@ -422,7 +387,7 @@ function validatePhone(phone) {
         return { valid: false, message: 'Please enter a realistic phone number.' };
     }
     
-    // don't allow repeating patterns (e.g., 111-111-1111, 123-123-1234, etc.)
+    // don't allow repeating patterns
     // Check if area code, exchange, and line are all the same
     if (area === exchange && exchange === line) {
         return { valid: false, message: 'Please enter a realistic phone number.' };
