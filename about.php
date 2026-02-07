@@ -1,0 +1,33 @@
+<?php
+$page_title = 'About Us - JL Zoo';
+$extra_styles = ['components/about/about-calendar.css'];
+$extra_scripts = ['components/about/about-calendar.js'];
+require __DIR__ . '/includes/head.php';
+require __DIR__ . '/includes/header.php';
+?>
+        <section class="container">
+            <div class="about-content">
+                <h1>About JL Zoo</h1>
+                <p>Welcome to JL Zoo, a premier destination for wildlife education and conservation. Since our founding, we have been dedicated to providing exceptional care for our animals while educating visitors about the importance of wildlife conservation.</p>
+
+                <h2>Our Mission</h2>
+                <p>At JL Zoo, our mission is to inspire conservation action through education, research, and the care of our diverse animal collection. We believe that by connecting people with wildlife, we can foster a deeper appreciation for the natural world and encourage actions that protect it for future generations.</p>
+
+                <h2>What We Offer</h2>
+                <ul>
+                    <li><strong>Educational Programs:</strong> Learn about animals, their habitats, and conservation efforts through our interactive exhibits and educational talks.</li>
+                    <li><strong>Conservation Initiatives:</strong> We actively participate in species conservation programs and support wildlife protection efforts worldwide.</li>
+                    <li><strong>Family-Friendly Activities:</strong> From animal feedings to educational workshops, there's something for visitors of all ages.</li>
+                    <li><strong>Research:</strong> Our facility supports ongoing research to better understand animal behavior, health, and conservation needs.</li>
+                </ul>
+
+                <h2>Upcoming Events</h2>
+                <p>Join us for our regular events throughout the month. Check out our calendar below to see what's happening at the zoo!</p>
+
+                <about-calendar></about-calendar>
+
+                <h2>Visit Us</h2>
+                <p>We're open daily from 9:00 AM to 5:00 PM. For group visits, educational programs, or special events, please contact us through our contact page. We look forward to welcoming you to JL Zoo!</p>
+            </div>
+        </section>
+<?php require __DIR__ . '/includes/footer.php'; ?>
