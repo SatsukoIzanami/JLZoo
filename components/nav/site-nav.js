@@ -11,33 +11,32 @@ class SiteNav extends HTMLElement {
         // brand link
         const brand = document.createElement('a');
         brand.className = 'brand';
-        brand.href = 'index.html';
+        brand.href = 'index.php';
         brand.textContent = 'JL Zoo';
 
         // links container
         const links = document.createElement('div');
         links.className = 'links';
 
-        // get current page filename
-        const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+        // get current page filename (support both .php and .html for flexibility)
+        const currentPage = window.location.pathname.split('/').pop() || 'index.php';
 
         // create link element
         const mkLink = (text, href) => {
             const a = document.createElement('a');
             a.href = href;
             a.textContent = text;
-            // add active class if current page matches
-            if (href === currentPage || (href === 'index.html' && (currentPage === '' || currentPage === 'index.html'))) {
-                a.classList.add('active');
-            }
+            const isIndex = href === 'index.php' || href === 'index.html';
+            const isCurrent = href === currentPage || (isIndex && (currentPage === '' || currentPage === 'index.php' || currentPage === 'index.html'));
+            if (isCurrent) a.classList.add('active');
             return a;
         };
 
         // append links to container
         links.append(
-            mkLink('Home', 'index.html'),
-            mkLink('About', 'about.html'),
-            mkLink('Contact', 'contact.html')
+            mkLink('Home', 'index.php'),
+            mkLink('About', 'about.php'),
+            mkLink('Contact', 'contact.php')
         );
 
         // append brand and links to nav
