@@ -1,0 +1,133 @@
+<!-- Animal Exhibit component -->
+<div class="exhibit-wrapper">
+  <!-- Panel -->
+  <section class="panel">
+    <h2>Browse by Animal</h2>
+    <div class="row">
+      <select aria-label="Animal Dropdown" [value]="selectedName()" (change)="pickAnimal($any($event.target).value)">
+        <option value="">- Select an Animal -</option>
+        @for (animal of animals(); track animal.name) {
+          <option [value]="animal.name">{{ animal.name }}</option>
+        }
+      </select>
+    </div>
+
+    <!-- Selected animal -->
+    @if (selectedAnimal(); as animal) {
+      <div class="animal-card card-container">
+        <img [src]="animal.image" [alt]="animal.name" />
+        <h3>
+          {{ displayName(animal.name) }}
+          @if (isAdopted(animal.name)) {
+            <span style="display:inline-block;margin-left:8px;padding:4px 8px;background:#28a745;color:#fff;border-radius:4px;font-size:.75rem;font-weight:600;">✓ Adopted</span>
+          }
+        </h3>
+        <p>Class: {{ animal.type }}</p>
+        <p>Status: {{ animal.conservationStatus }}</p>
+        <p>Habitat: {{ animal.habitat }}</p>
+        <p>{{ animal.description }}</p>
+
+        <!-- Fun fact -->
+        @if (animal.funFact) {
+          <details>
+            <summary>Show Fun Fact</summary>
+            <p><strong>Fun Fact:</strong> {{ animal.funFact }}</p>
+          </details>
+        }
+
+        <!-- Button container -->
+        <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;">
+          <button type="button" class="btn primary" [disabled]="isAdopted(animal.name)" (click)="openAdoption(animal)">
+            {{ isAdopted(animal.name) ? 'Already Adopted' : 'Adopt' }}
+          </button>
+        </div>
+      </div>
+    }
+
+    <!-- Load error -->
+    @if (loadError()) {
+      <p class="muted">{{ loadError() }}</p>
+    }
+  </section>
+
+  <!-- Adopted animals -->
+  <section class="panel">
+    <h2>Adopted Animals</h2>
+    <ul class="adopted-list">
+      @if (adoptedRecords().length === 0) {
+        <li class="muted">No adopted animals yet.</li>
+      }
+      @for (record of adoptedRecords(); track record.displayName) {
+        <li>
+          <div class="adopt-info">
+            <span>{{ record.displayName }}</span>
+            <span class="adopt-phone">Phone: {{ contactFor(record.displayName) }}</span>
+          </div>
+          <button type="button" class="btn danger sm" (click)="removeAdoption(record.displayName)">Remove</button>
+        </li>
+      }
+    </ul>
+  </section>
+
+  <!-- Search -->
+  <section class="panel">
+    <h2>Search the Zoo</h2>
+    <input type="search" placeholder="Search by name or class..." [value]="searchQuery()" (input)="searchQuery.set($any($event.target).value)" />
+    <ul class="results-list">
+      @if (searchQuery().trim() && searchResults().length === 0) {
+        <li class="muted">No matches</li>
+      }
+      @for (animal of searchResults(); track animal.name) {
+        <li (click)="pickAnimal(animal.name)">{{ animal.name }} ({{ animal.type }})</li>
+      }
+    </ul>
+  </section>
+
+  <!-- Add animal -->
+  <section class="panel">
+    <h2>Add an Animal</h2>
+    <form class="form-add" [formGroup]="addAnimalForm" (ngSubmit)="submitAnimal()" novalidate>
+      <div class="field"><label for="species">Species *</label><input id="species" type="text" formControlName="species" /></div>
+      <div class="field"><label for="class">Class *</label><input id="class" type="text" formControlName="class" /></div>
+      <div class="field">
+        <label for="conservationStatus">Conservation Status *</label>
+        <select id="conservationStatus" formControlName="conservationStatus">
+          <option value="">- Select status -</option>
+          <option>Least Concern</option>
+          <option>Near Threatened</option>
+          <option>Vulnerable</option>
+          <option>Endangered</option>
+          <option>Critically Endangered</option>
+        </select>
+      </div>
+      <div class="field"><label for="habitat">Habitat *</label><input id="habitat" type="text" formControlName="habitat" /></div>
+      <div class="field"><label for="img">Image URL</label><input id="img" type="url" formControlName="img" placeholder="https://..." /></div>
+      <div class="field"><label for="description">Description *</label><textarea id="description" rows="3" formControlName="description"></textarea></div>
+      <div class="field"><label for="more">Fun Fact</label><input id="more" type="text" formControlName="more" /></div>
+      <div class="row">
+        <button type="submit" class="btn primary">Add to Zoo</button>
+        <button type="reset" class="btn ghost" (click)="addAnimalForm.reset({ species:'', class:'', conservationStatus:'', habitat:'', img:'', description:'', more:'' })">Reset</button>
+      </div>
+      <p class="form-message">{{ formMessage() }}</p>
+    </form>
+  </section>
+</div>
+
+<!-- Adoption modal -->
+@if (adoptionOpen() && adoptionTarget(); as target) {
+  <div class="adoption-modal" role="dialog" aria-modal="true" (click)="closeAdoption()" style="position:fixed;z-index:1000;left:0;top:0;width:100vw;height:100vh;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.45);">
+    <div style="background:#101820;padding:2rem;border-radius:12px;max-width:400px;width:90%;color:#f0f4ff;" (click)="$event.stopPropagation()">
+      <h2 style="margin-top:0;">Adopt {{ target.name }}</h2>
+      <form [formGroup]="adoptForm" (ngSubmit)="confirmAdoption()">
+        <p>Give your adopted animal a custom name (optional):</p>
+        <input type="text" formControlName="customName" />
+        <p>Please enter your phone number to finalize your adoption:</p>
+        <input type="tel" formControlName="phone" placeholder="e.g. 555-555-5555" />
+        <div style="margin-top:1rem;display:flex;gap:1rem;justify-content:flex-end;">
+          <button type="button" class="btn ghost" (click)="closeAdoption()">Cancel</button>
+          <button type="submit" class="btn primary">Adopt</button>
+        </div>
+      </form>
+    </div>
+  </div>
+}

@@ -1,0 +1,53 @@
+<!-- Calendar wrapper -->
+<div class="calendar-wrapper">
+  <!-- Calendar header -->
+  <div class="calendar-header">
+    <button class="calendar-nav" aria-label="Previous month" (click)="changeMonth(-1)">←</button>
+    <h3 class="calendar-month-year">{{monthNames[currentMonth]}} {{currentYear}}</h3>
+    <button class="calendar-nav" aria-label="Next month" (click)="changeMonth(1)">→</button>
+  </div>
+
+  <!-- Day labels -->
+  <div class="calendar-day-labels">
+    @for (day of dayNames; track day) {
+      <div class="calendar-day-label">{{day}}</div>
+    }
+  </div>
+
+  <!-- Calendar grid -->
+  <div class="calendar-grid">
+    @for (_ of leadingEmptyCells(); track $index) {
+      <div class="calendar-day empty"></div>
+    }
+    <!-- Calendar days -->
+    @for (day of calendarDays(); track day) {
+      <div class="calendar-day" [class.has-events]="eventsForDay(day).length > 0" [class.today]="isToday(day)" (click)="eventsForDay(day).length > 0 && openEvent(day)">
+        <div class="calendar-day-number">{{day}}</div>
+        @if (eventsForDay(day).length > 0) {
+          <div class="calendar-events">
+            @for (event of eventsForDay(day); track event.title) {
+              <div class="calendar-event">{{event.title}}</div>
+            }
+          </div>
+        }
+      </div>
+    }
+  </div>
+</div>
+
+<!-- Event modal -->
+@if (selectedEvent) {
+  <div class="event-modal active" (click)="closeEvent()">
+    <div class="event-modal-content" (click)="$event.stopPropagation()">
+      <div class="event-modal-header">
+        <h3 class="event-modal-title">{{selectedEvent.event.title}}</h3>
+        <button class="event-modal-close" aria-label="Close" (click)="closeEvent()">×</button>
+      </div>
+      <div class="event-modal-body">
+        <p class="event-modal-date">{{monthNames[currentMonth]}} {{selectedEvent.day}}, {{currentYear}}</p>
+        <p class="event-modal-time">Time: {{selectedEvent.event.time}}</p>
+        <p class="event-modal-description">{{selectedEvent.event.description}}</p>
+      </div>
+    </div>
+  </div>
+}

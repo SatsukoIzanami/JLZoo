@@ -34,14 +34,20 @@ app.use((err, req, res, next) => {
     next(err);
 });
 
-// server vite build/dist statically
-const distPath = path.join(__dirname, '../dist');
+// Serve static front-end from Angular build first, then legacy Vite dist.
+// Angular's build output keeps `index.html` under `browser/`.
+const angularBrowserDistPath = path.join(
+    __dirname,
+    '../frontend-angular/dist/frontend-angular/browser'
+);
+const viteDistPath = path.join(__dirname, '../dist');
+const distPath = fs.existsSync(angularBrowserDistPath) ? angularBrowserDistPath : viteDistPath;
 try {
     if (fs.existsSync(distPath)) {
         app.use(express.static(distPath));
-        console.log('Static front-end enabled from /dist');
+        console.log(`Static front-end enabled from ${distPath}`);
     } else {
-        console.warn('No /dist folder found. Run "npm run build" first for production.');
+        console.warn('No front-end build folder found. Run "npm run build:ng" (or legacy "npm run build") first.');
     }
 } catch (err) {
     console.error('Error checking dist path:', err);
