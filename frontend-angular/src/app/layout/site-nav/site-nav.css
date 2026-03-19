@@ -1,11 +1,11 @@
-/* Site Navigation Component Styles */
+/* Site Navigation Component Styles (Angular host is app-site-nav, not site-nav) */
 
-site-nav {
+:host {
     display: block;
     width: 100%;
 }
 
-site-nav .navbar {
+:host .navbar {
     position: sticky;
     top: 0;
     z-index: 1000;
@@ -17,20 +17,20 @@ site-nav .navbar {
     padding: 0.75rem 1rem;
 }
 
-site-nav .brand {
+:host .brand {
     font-weight: 800;
     font-size: 1.6rem;
     color: #111;
     white-space: nowrap;
 }
 
-site-nav .links {
+:host .links {
     display: flex;
     gap: 1.5rem;
     flex-wrap: nowrap;
 }
 
-site-nav a {
+:host a {
     color: var(--font-color, #333);
     text-decoration: none;
     padding: 0.4rem 0.6rem;
@@ -38,14 +38,14 @@ site-nav a {
     transition: background 0.2s, color 0.2s;
 }
 
-site-nav a:hover,
-site-nav a:focus-visible {
+:host a:hover,
+:host a:focus-visible {
     color: var(--accent-color, #0077cc);
     background: rgba(0, 119, 204, 0.08);
     outline: none;
 }
 
-site-nav a.active {
+:host a.active {
     color: var(--accent-color, #0077cc);
     background: rgba(0, 119, 204, 0.12);
     font-weight: 600;
