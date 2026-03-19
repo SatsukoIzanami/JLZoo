@@ -1,0 +1,71 @@
+/* About page (must live here — .about-content is in this component’s template, not the calendar’s) */
+:host {
+  display: block;
+}
+
+.about-content {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+  background: linear-gradient(135deg, #f0f7f4 0%, #e8f5e9 100%);
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border: 1px solid #c8e6c9;
+}
+
+.about-content h1 {
+  color: #2e7d32;
+  margin-bottom: 1.5rem;
+  font-size: 2.5rem;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-bottom: 3px solid #4caf50;
+  padding-bottom: 0.5rem;
+}
+
+.about-content h2 {
+  color: #1b5e20;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  font-size: 1.75rem;
+  background: linear-gradient(90deg, #a5d6a7 0%, transparent 100%);
+  padding: 0.5rem 1rem;
+  border-left: 4px solid #4caf50;
+  border-radius: 4px;
+}
+
+:host .about-content p {
+  margin-bottom: 1.5rem;
+  line-height: 1.8;
+  color: #2c3e2c;
+  background: rgba(255, 255, 255, 0.6);
+  padding: 1rem;
+  border-radius: 8px;
+  border-left: 3px solid #81c784;
+  max-width: 100%;
+  width: 100%;
+}
+
+.about-content ul {
+  margin-bottom: 1.5rem;
+  padding-left: 2rem;
+  background: rgba(255, 255, 255, 0.7);
+  padding: 1.5rem;
+  border-radius: 8px;
+  border: 1px solid #a5d6a7;
+}
+
+.about-content li {
+  margin-bottom: 0.75rem;
+  line-height: 1.8;
+  color: #2c3e2c;
+  padding-left: 0.5rem;
+}
+
+.about-content li::marker {
+  color: #4caf50;
+}
+
+.about-content strong {
+  color: #1b5e20;
+  font-weight: 700;
+}

@@ -1,0 +1,18 @@
+/* Intro lives on this page’s template; styles must be here (not in contact-form.css) */
+:host {
+  display: block;
+}
+
+#contact-intro {
+  max-width: 700px;
+  margin: 1rem auto 2rem;
+  text-align: center;
+  color: #2c3e2c;
+  font-size: 1.1rem;
+  line-height: 1.7;
+  padding: 1.25rem 1.5rem;
+  background: linear-gradient(135deg, #ffffff 0%, #f1f8e9 100%);
+  border: 2px solid #a5d6a7;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.2);
+}

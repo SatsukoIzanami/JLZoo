@@ -14,7 +14,7 @@
     "test": "jasmine",
     "test:local": "cross-env NODE_ENV=test jasmine spec/local-api.spec.mjs",
     "test:render": "cross-env NODE_ENV=test jasmine spec/render-api.spec.mjs",
-    "deploy": "gh-pages -d dist"
+    "deploy": "npm run build:ng && gh-pages -d frontend-angular/dist/frontend-angular/browser"
   },
   "author": "Jessica Lecker",
   "license": "ISC",

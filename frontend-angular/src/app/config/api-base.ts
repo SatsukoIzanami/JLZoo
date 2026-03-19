@@ -24,3 +24,14 @@ export function getZooApiBase(): string {
 
   return '/api';
 }
+
+/** Turn API image fields into a URL the browser can load. */
+export function resolveZooImageUrl(imagePath: string): string {
+  const trimmed = (imagePath ?? '').trim();
+  if (!trimmed) return '';
+  if (/^https?:\/\//i.test(trimmed)) {
+    return trimmed;
+  }
+  // Keep relative asset paths relative to the app's base href (/JLZoo/ on GitHub Pages).
+  return trimmed.replace(/^\/+/, '');
+}
