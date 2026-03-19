@@ -20,7 +20,8 @@ const app = express();
 const allowed = [
     'https://satsukoizanami.github.io',
     'https://satsukoizanami.github.io/JLZoo',
-    'http://localhost:5173'
+    'http://localhost:5173',
+    'http://localhost:4200'
 ];
 app.use(cors({ origin: allowed }));
 
