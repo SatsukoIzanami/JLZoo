@@ -1,0 +1,6 @@
+@Zoo.Api_HostAddress = http://localhost:3000
+
+GET {{Zoo.Api_HostAddress}}/api/animals
+Accept: application/json
+
+###

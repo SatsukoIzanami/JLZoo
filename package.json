@@ -11,6 +11,7 @@
     "build:ng": "npm --prefix frontend-angular run build",
     "preview": "vite preview",
     "start": "node api/server.js",
+    "start:dotnet": "dotnet run --project Zoo.Api --launch-profile http",
     "test": "jasmine",
     "test:local": "cross-env NODE_ENV=test jasmine spec/local-api.spec.mjs",
     "test:render": "cross-env NODE_ENV=test jasmine spec/render-api.spec.mjs",

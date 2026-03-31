@@ -12,6 +12,13 @@ package-lock.json
 yarn.lock
 pnpm-lock.yaml
 
+# .NET (Zoo.Api)
+Zoo.Api/bin/
+Zoo.Api/obj/
+Zoo.Api/appsettings.Local.json
+*.user
+*.suo
+
 # Build output
 dist/
 coverage/
