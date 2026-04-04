@@ -1,20 +1,20 @@
 main {
   min-height: calc(100vh - 72px);
-  padding-bottom: 44px;
 }
 
 .build-stamp {
   position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 1000;
-  text-align: center;
-  padding: 10px 8px;
-  color: #2f4f2f;
+  top: 82px;
+  right: 12px;
+  z-index: 2000;
+  padding: 8px 10px;
+  color: #ffffff;
   font-size: 12px;
+  font-weight: 700;
   letter-spacing: 0.2px;
-  background: rgba(255, 255, 255, 0.92);
-  border-top: 1px solid rgba(46, 125, 50, 0.25);
-  backdrop-filter: blur(2px);
+  background: rgba(27, 94, 32, 0.95);
+  border: 2px solid #a5d6a7;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.22);
+  max-width: calc(100vw - 24px);
 }
