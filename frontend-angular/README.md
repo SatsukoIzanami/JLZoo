@@ -36,6 +36,8 @@ ng build
 
 This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
 
+The app footer shows a build stamp (`Build vX.Y.Z | <timestamp>`). Use it to confirm whether your latest build/deploy is live.
+
 ## Running unit tests
 
 To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
