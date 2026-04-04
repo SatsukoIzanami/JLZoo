@@ -187,51 +187,54 @@
 /* Form add */
 .form-add {
     display: grid;
-    row-gap: 12px;
+    grid-template-columns: repeat(2, minmax(220px, 1fr));
+    gap: 12px 16px;
+    max-width: 720px;
 }
 
 /* Form add field */
 .form-add .field {
-    display: grid;
-    grid-template-columns: var(--label-w) minmax(0, var(--field-w));
+    display: block;
+}
+
+.field-span-2 {
+    grid-column: 1 / -1;
+}
+
+.form-actions {
+    justify-content: flex-start;
     align-items: center;
-    column-gap: 16px;
+    margin-top: 2px;
 }
 
-/* Form add label */
-.form-add label {
-    font-weight: 600;
-    color: #2c3e50;
-}
-
-/* Form add input */
-.form-add input,
-.form-add select,
-.form-add textarea {
-    width: 100%;
-    padding: 10px 12px;
-    border: 1px solid #ced4da;
-    background: #ffffff;
-    color: #2c3e50;
-    border-radius: 8px;
-    font-size: 1rem;
-    transition: border-color 0.2s, box-shadow 0.2s;
-}
-
-/* Form add input focus */
-.form-add input:focus,
-.form-add select:focus,
-.form-add textarea:focus {
-    outline: none;
-    border-color: #5aa2ff;
-    box-shadow: 0 0 0 3px rgba(90, 162, 255, 0.1);
+.form-actions button {
+    min-width: 140px;
 }
 
 /* Stack label above input on small screens */
 @media (max-width: 640px) {
-    .form-add .field {
+    .form-add {
         grid-template-columns: 1fr;
-        row-gap: 6px;
+        gap: 10px;
+    }
+
+    .form-add .field {
+        display: block;
+    }
+
+    .field-span-2 {
+        grid-column: auto;
+    }
+
+    .form-actions {
+        justify-content: center;
+        width: 100%;
+        gap: 8px;
+    }
+
+    .form-actions button {
+        flex: 1 1 140px;
+        max-width: 220px;
     }
 }
 
@@ -242,14 +245,6 @@
     margin-top: 4px;
     min-height: 1.2em; /* reserves space even when empty */
     font-weight: 500;
-}
-
-/* Is invalid input? (error) */
-.is-invalid input,
-.is-invalid select,
-.is-invalid textarea {
-    border-color: #dc3545;
-    outline: none;
 }
 
 /* Animal card */
@@ -282,6 +277,29 @@
 
 .card-actions {
     margin-top: 12px;
+}
+
+.search-field {
+    max-width: 720px;
+}
+
+/* Undo global input/textarea sizing that distorts Angular Material controls */
+:host ::ng-deep .mat-mdc-form-field .mat-mdc-input-element,
+:host ::ng-deep .mat-mdc-form-field textarea.mat-mdc-input-element {
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* Keep Material fields compact and consistent */
+:host ::ng-deep .mat-mdc-form-field .mat-mdc-form-field-infix {
+    min-height: 48px;
+    padding-top: 12px !important;
+    padding-bottom: 10px !important;
+}
+
+/* Give only description textarea extra vertical room */
+:host ::ng-deep .description-field .mat-mdc-form-field-infix {
+    min-height: 92px;
 }
 
 /* Muted */

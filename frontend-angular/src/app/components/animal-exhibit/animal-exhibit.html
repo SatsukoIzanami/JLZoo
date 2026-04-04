@@ -73,7 +73,7 @@
   <!-- Search -->
   <section class="panel">
     <h2>Search the Zoo</h2>
-    <mat-form-field appearance="outline" class="full-width">
+    <mat-form-field appearance="outline" class="full-width search-field">
       <mat-label>Search by name or class</mat-label>
       <input matInput type="search" [formControl]="searchControl" />
     </mat-form-field>
@@ -128,8 +128,8 @@
           <input matInput id="img" type="url" formControlName="img" placeholder="https://..." />
         </mat-form-field>
       </div>
-      <div class="field">
-        <mat-form-field appearance="outline" class="full-width">
+      <div class="field field-span-2">
+        <mat-form-field appearance="outline" class="full-width description-field">
           <mat-label>Description *</mat-label>
           <textarea matInput id="description" rows="3" formControlName="description"></textarea>
         </mat-form-field>
@@ -140,7 +140,7 @@
           <input matInput id="more" type="text" formControlName="more" />
         </mat-form-field>
       </div>
-      <div class="row">
+      <div class="row form-actions field-span-2">
         <button mat-raised-button type="submit" color="primary">Add to Zoo</button>
         <button mat-stroked-button type="reset" (click)="addAnimalForm.reset({ species:'', class:'', conservationStatus:'', habitat:'', img:'', description:'', more:'' })">Reset</button>
       </div>
