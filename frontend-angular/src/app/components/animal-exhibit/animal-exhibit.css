@@ -270,7 +270,11 @@
 
 /* Animal card image */
 .animal-card img {
-    max-width: 100%;
+    width: 100%;
+    max-width: 320px;
+    max-height: 220px;
+    object-fit: cover;
+    display: block;
     border-radius: 8px;
     margin-bottom: 12px;
 }
