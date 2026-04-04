@@ -39,6 +39,10 @@
     margin: 10px 0;
 }
 
+.full-width {
+    width: 100%;
+}
+
 /* Card container */
 .card-container {
     margin-top: 12px;
@@ -91,10 +95,21 @@
 }
 
 /* Adopt phone */
-    .adopt-phone {
+.adopt-phone {
     font-size: 11px;
     color: #6c757d;
     margin-top: 2px;
+}
+
+.adopted-badge {
+    display: inline-block;
+    margin-left: 8px;
+    padding: 4px 8px;
+    background: #28a745;
+    color: #fff;
+    border-radius: 4px;
+    font-size: .75rem;
+    font-weight: 600;
 }
 
 /* Small button */
@@ -263,6 +278,10 @@
     max-width: 100%;
     border-radius: 8px;
     margin-bottom: 12px;
+}
+
+.card-actions {
+    margin-top: 12px;
 }
 
 /* Muted */

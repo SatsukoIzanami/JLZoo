@@ -3,23 +3,24 @@
   <!-- Panel -->
   <section class="panel">
     <h2>Browse by Animal</h2>
-    <div class="row">
-      <select aria-label="Animal Dropdown" [value]="selectedName()" (change)="pickAnimal($any($event.target).value)">
-        <option value="">- Select an Animal -</option>
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Animal</mat-label>
+      <mat-select [value]="selectedName()" (valueChange)="pickAnimal($event)">
+        <mat-option value="">- Select an Animal -</mat-option>
         @for (animal of animals(); track animal.name) {
-          <option [value]="animal.name">{{ animal.name }}</option>
+          <mat-option [value]="animal.name">{{ animal.name }}</mat-option>
         }
-      </select>
-    </div>
+      </mat-select>
+    </mat-form-field>
 
     <!-- Selected animal -->
     @if (selectedAnimal(); as animal) {
-      <div class="animal-card card-container">
+      <mat-card class="animal-card card-container">
         <img [src]="animal.image" [alt]="animal.name" />
         <h3>
           {{ displayName(animal.name) }}
           @if (isAdopted(animal.name)) {
-            <span style="display:inline-block;margin-left:8px;padding:4px 8px;background:#28a745;color:#fff;border-radius:4px;font-size:.75rem;font-weight:600;">✓ Adopted</span>
+            <span class="adopted-badge">✓ Adopted</span>
           }
         </h3>
         <p>Class: {{ animal.type }}</p>
@@ -36,12 +37,12 @@
         }
 
         <!-- Button container -->
-        <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;">
-          <button type="button" class="btn primary" [disabled]="isAdopted(animal.name)" (click)="openAdoption(animal)">
+        <div class="row card-actions">
+          <button mat-raised-button type="button" color="primary" [disabled]="isAdopted(animal.name)" (click)="openAdoption(animal)">
             {{ isAdopted(animal.name) ? 'Already Adopted' : 'Adopt' }}
           </button>
         </div>
-      </div>
+      </mat-card>
     }
 
     <!-- Load error -->
@@ -63,7 +64,7 @@
             <span>{{ record.displayName }}</span>
             <span class="adopt-phone">Phone: {{ contactFor(record.displayName) }}</span>
           </div>
-          <button type="button" class="btn danger sm" (click)="removeAdoption(record.displayName)">Remove</button>
+          <button mat-stroked-button type="button" color="warn" (click)="removeAdoption(record.displayName)">Remove</button>
         </li>
       }
     </ul>
@@ -72,9 +73,12 @@
   <!-- Search -->
   <section class="panel">
     <h2>Search the Zoo</h2>
-    <input type="search" placeholder="Search by name or class..." [value]="searchQuery()" (input)="searchQuery.set($any($event.target).value)" />
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Search by name or class</mat-label>
+      <input matInput type="search" [formControl]="searchControl" />
+    </mat-form-field>
     <ul class="results-list">
-      @if (searchQuery().trim() && searchResults().length === 0) {
+      @if (searchControl.value.trim() && searchResults().length === 0) {
         <li class="muted">No matches</li>
       }
       @for (animal of searchResults(); track animal.name) {
@@ -87,47 +91,59 @@
   <section class="panel">
     <h2>Add an Animal</h2>
     <form class="form-add" [formGroup]="addAnimalForm" (ngSubmit)="submitAnimal()" novalidate>
-      <div class="field"><label for="species">Species *</label><input id="species" type="text" formControlName="species" /></div>
-      <div class="field"><label for="class">Class *</label><input id="class" type="text" formControlName="class" /></div>
       <div class="field">
-        <label for="conservationStatus">Conservation Status *</label>
-        <select id="conservationStatus" formControlName="conservationStatus">
-          <option value="">- Select status -</option>
-          <option>Least Concern</option>
-          <option>Near Threatened</option>
-          <option>Vulnerable</option>
-          <option>Endangered</option>
-          <option>Critically Endangered</option>
-        </select>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Species *</mat-label>
+          <input matInput id="species" type="text" formControlName="species" />
+        </mat-form-field>
       </div>
-      <div class="field"><label for="habitat">Habitat *</label><input id="habitat" type="text" formControlName="habitat" /></div>
-      <div class="field"><label for="img">Image URL</label><input id="img" type="url" formControlName="img" placeholder="https://..." /></div>
-      <div class="field"><label for="description">Description *</label><textarea id="description" rows="3" formControlName="description"></textarea></div>
-      <div class="field"><label for="more">Fun Fact</label><input id="more" type="text" formControlName="more" /></div>
+      <div class="field">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Class *</mat-label>
+          <input matInput id="class" type="text" formControlName="class" />
+        </mat-form-field>
+      </div>
+      <div class="field">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Conservation Status *</mat-label>
+          <mat-select id="conservationStatus" formControlName="conservationStatus">
+            <mat-option value="">- Select status -</mat-option>
+            <mat-option value="Least Concern">Least Concern</mat-option>
+            <mat-option value="Near Threatened">Near Threatened</mat-option>
+            <mat-option value="Vulnerable">Vulnerable</mat-option>
+            <mat-option value="Endangered">Endangered</mat-option>
+            <mat-option value="Critically Endangered">Critically Endangered</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="field">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Habitat *</mat-label>
+          <input matInput id="habitat" type="text" formControlName="habitat" />
+        </mat-form-field>
+      </div>
+      <div class="field">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Image URL</mat-label>
+          <input matInput id="img" type="url" formControlName="img" placeholder="https://..." />
+        </mat-form-field>
+      </div>
+      <div class="field">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Description *</mat-label>
+          <textarea matInput id="description" rows="3" formControlName="description"></textarea>
+        </mat-form-field>
+      </div>
+      <div class="field">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Fun Fact</mat-label>
+          <input matInput id="more" type="text" formControlName="more" />
+        </mat-form-field>
+      </div>
       <div class="row">
-        <button type="submit" class="btn primary">Add to Zoo</button>
-        <button type="reset" class="btn ghost" (click)="addAnimalForm.reset({ species:'', class:'', conservationStatus:'', habitat:'', img:'', description:'', more:'' })">Reset</button>
+        <button mat-raised-button type="submit" color="primary">Add to Zoo</button>
+        <button mat-stroked-button type="reset" (click)="addAnimalForm.reset({ species:'', class:'', conservationStatus:'', habitat:'', img:'', description:'', more:'' })">Reset</button>
       </div>
-      <p class="form-message">{{ formMessage() }}</p>
     </form>
   </section>
 </div>
-
-<!-- Adoption modal -->
-@if (adoptionOpen() && adoptionTarget(); as target) {
-  <div class="adoption-modal" role="dialog" aria-modal="true" (click)="closeAdoption()" style="position:fixed;z-index:1000;left:0;top:0;width:100vw;height:100vh;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.45);">
-    <div style="background:#101820;padding:2rem;border-radius:12px;max-width:400px;width:90%;color:#f0f4ff;" (click)="$event.stopPropagation()">
-      <h2 style="margin-top:0;">Adopt {{ target.name }}</h2>
-      <form [formGroup]="adoptForm" (ngSubmit)="confirmAdoption()">
-        <p>Give your adopted animal a custom name (optional):</p>
-        <input type="text" formControlName="customName" />
-        <p>Please enter your phone number to finalize your adoption:</p>
-        <input type="tel" formControlName="phone" placeholder="e.g. 555-555-5555" />
-        <div style="margin-top:1rem;display:flex;gap:1rem;justify-content:flex-end;">
-          <button type="button" class="btn ghost" (click)="closeAdoption()">Cancel</button>
-          <button type="submit" class="btn primary">Adopt</button>
-        </div>
-      </form>
-    </div>
-  </div>
-}

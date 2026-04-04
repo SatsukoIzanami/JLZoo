@@ -1,49 +1,92 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, computed, signal } from '@angular/core';
-import { inject } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
+import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { MatDialog } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { BehaviorSubject, catchError, combineLatest, debounceTime, distinctUntilChanged, map, of, shareReplay, startWith, switchMap, take } from 'rxjs';
 import { Animal } from '../../models/animal';
 import { AdoptionStateService } from '../../services/adoption-state';
 import { ZooDataService } from '../../services/zoo-data';
+import { AdoptionDialogComponent } from '../adoption-dialog/adoption-dialog';
 
 // Animal Exhibit component
 @Component({
   selector: 'app-animal-exhibit',
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    MatButtonModule,
+    MatCardModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatSnackBarModule
+  ],
   templateUrl: './animal-exhibit.html',
   styleUrl: './animal-exhibit.css'
 })
-export class AnimalExhibit implements OnInit {
+export class AnimalExhibit {
   private readonly zooData = inject(ZooDataService);
   private readonly adoption = inject(AdoptionStateService);
+  private readonly dialog = inject(MatDialog);
+  private readonly snackBar = inject(MatSnackBar);
   private readonly fb = inject(FormBuilder);
+  private readonly refreshAnimals$ = new BehaviorSubject<void>(void 0);
 
   // Animals
-  animals = signal<Animal[]>([]);
+  readonly animals$ = this.refreshAnimals$.pipe(
+    switchMap(() =>
+      this.zooData.getAnimals().pipe(
+        map((animals) => {
+          this.loadError.set('');
+          return animals;
+        }),
+        catchError(() => {
+          this.loadError.set('Could not load animals.');
+          return of<Animal[]>([]);
+        })
+      )
+    ),
+    shareReplay(1)
+  );
+  animals = toSignal(this.animals$, { initialValue: [] });
   // Selected name
   selectedName = signal('');
-  // Search query
-  searchQuery = signal('');
   // Load error
   loadError = signal('');
-  // Form message
-  formMessage = signal('');
-
-  // Adoption open
-  adoptionOpen = signal(false);
-  // Adoption target
-  adoptionTarget = signal<Animal | null>(null);
+  // Search control
+  readonly searchControl = this.fb.control('', { nonNullable: true });
 
   // Selected animal
   readonly selectedAnimal = computed(() => this.animals().find((a) => a.name === this.selectedName()) ?? null);
   // Adopted records
   readonly adoptedRecords = this.adoption.records;
   // Search results
-  readonly searchResults = computed(() => {
-    const q = this.searchQuery().trim().toLowerCase();
-    if (!q) return [];
-    return this.animals().filter((a) => [a.name, a.type, a.habitat, a.conservationStatus].some((v) => String(v ?? '').toLowerCase().includes(q)));
-  });
+  readonly searchResults = toSignal(
+    combineLatest([
+      toObservable(this.animals),
+      this.searchControl.valueChanges.pipe(
+        startWith(this.searchControl.value),
+        debounceTime(200),
+        map((query) => query.trim().toLowerCase()),
+        distinctUntilChanged()
+      )
+    ]).pipe(
+      map(([animals, query]) => {
+        if (!query) return [];
+        return animals.filter((a) =>
+          [a.name, a.type, a.habitat, a.conservationStatus].some((v) => String(v ?? '').toLowerCase().includes(query))
+        );
+      })
+    ),
+    { initialValue: [] }
+  );
 
   // Add animal form
   readonly addAnimalForm = this.fb.group({
@@ -56,28 +99,9 @@ export class AnimalExhibit implements OnInit {
     more: ['']
   });
 
-  // Adopt form
-  readonly adoptForm = this.fb.group({
-    customName: [''],
-    phone: ['', Validators.required]
-  });
-
-  // On init
-  ngOnInit(): void {
-    this.loadAnimals();
-  }
-
   // Load animals
   loadAnimals(): void {
-    this.zooData.getAnimals().subscribe({
-      next: (animals) => {
-        this.animals.set(animals);
-        this.loadError.set('');
-      },
-      error: () => {
-        this.loadError.set('Could not load animals.');
-      }
-    });
+    this.refreshAnimals$.next();
   }
 
   // Pick animal
@@ -87,28 +111,20 @@ export class AnimalExhibit implements OnInit {
 
   // Open adoption
   openAdoption(animal: Animal): void {
-    this.adoptionTarget.set(animal);
-    this.adoptForm.reset({ customName: animal.name, phone: '' });
-    this.adoptionOpen.set(true);
-  }
-
-  // Close adoption
-  closeAdoption(): void {
-    this.adoptionOpen.set(false);
-    this.adoptionTarget.set(null);
-  }
-
-  // Confirm adoption
-  confirmAdoption(): void {
-    if (this.adoptForm.invalid || !this.adoptionTarget()) {
-      this.adoptForm.markAllAsTouched();
-      return;
-    }
-    const target = this.adoptionTarget();
-    if (!target) return;
-
-    this.adoption.adopt(target.name, this.adoptForm.value.phone?.trim() ?? '', this.adoptForm.value.customName?.trim() ?? '');
-    this.closeAdoption();
+    this.dialog
+      .open(AdoptionDialogComponent, {
+        width: '420px',
+        data: animal
+      })
+      .afterClosed()
+      .pipe(take(1))
+      .subscribe((result: { customName: string; phone: string } | undefined) => {
+        if (!result) return;
+        this.adoption.adopt(animal.name, result.phone, result.customName);
+        this.snackBar.open(`${this.adoption.displayName(animal.name)} adopted successfully!`, 'Close', {
+          duration: 3000
+        });
+      });
   }
 
   // Remove adoption
@@ -151,17 +167,23 @@ export class AnimalExhibit implements OnInit {
     };
 
     // Create animal
-    this.zooData.createAnimal(payload).subscribe({
-      next: (saved) => {
-        this.animals.set([...this.animals(), saved]);
-        this.formMessage.set('Animal added!');
-        this.addAnimalForm.reset({ species: '', class: '', conservationStatus: '', habitat: '', img: '', description: '', more: '' });
-        setTimeout(() => this.formMessage.set(''), 4000);
-      },
-      // Error
-      error: () => {
-        this.formMessage.set('Error: could not save animal.');
-      }
-    });
+    this.zooData
+      .createAnimal(payload)
+      .pipe(take(1))
+      .subscribe({
+        next: () => {
+          this.loadAnimals();
+          this.snackBar.open('Animal added to the zoo!', 'Close', {
+            duration: 3000
+          });
+          this.addAnimalForm.reset({ species: '', class: '', conservationStatus: '', habitat: '', img: '', description: '', more: '' });
+        },
+        // Error
+        error: () => {
+          this.snackBar.open('Error: could not save animal.', 'Close', {
+            duration: 4000
+          });
+        }
+      });
   }
 }
