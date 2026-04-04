@@ -272,7 +272,7 @@
 .animal-card img {
     width: 100%;
     max-width: 320px;
-    max-height: 220px;
+    max-height: 320px;
     object-fit: cover;
     display: block;
     border-radius: 8px;
