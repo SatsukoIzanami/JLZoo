@@ -21,9 +21,9 @@ builder.Services.AddCors(options =>
     {
         policy
             .WithOrigins(
-                "http://localhost:4200",
                 "http://localhost:5173",
-                "https://satsukoizanami.github.io")
+                "https://satsukoizanami.github.io",
+                "https://jlzoo.infinityfree.me")
             .AllowAnyHeader()
             .AllowAnyMethod();
     });

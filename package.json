@@ -1,35 +1,21 @@
 {
-  "name": "zoo-api",
+  "name": "zoo",
   "version": "1.0.0",
-  "description": "REST API for JL Zoo",
-  "main": "server.js",
-  "type": "module",
+  "private": true,
+  "description": "JL Zoo — React frontend + ASP.NET Core (EF Core) API",
   "scripts": {
-    "dev": "vite",
-    "build": "cross-env GITHUB_PAGES=true vite build",
-    "dev:ng": "npm --prefix frontend-angular start",
-    "build:ng": "npm --prefix frontend-angular run build",
-    "preview": "vite preview",
-    "start": "node api/server.js",
-    "start:dotnet": "dotnet run --project Zoo.Api --launch-profile http",
-    "test": "jasmine",
-    "test:local": "cross-env NODE_ENV=test jasmine spec/local-api.spec.mjs",
-    "test:render": "cross-env NODE_ENV=test jasmine spec/render-api.spec.mjs",
-    "deploy:ghpages": "npm run build:ng && gh-pages -d frontend-angular/dist/frontend-angular/browser",
-    "deploy": "npm run build:ng && node -e \"const fs=require('fs');fs.rmSync('docs',{recursive:true,force:true});fs.mkdirSync('docs',{recursive:true});fs.cpSync('frontend-angular/dist/frontend-angular/browser','docs',{recursive:true});\""
+    "dev": "npm --prefix frontend-react run dev",
+    "build": "npm --prefix frontend-react run build",
+    "build:ghpages": "cross-env GITHUB_PAGES=true npm --prefix frontend-react run build",
+    "preview": "npm --prefix frontend-react run preview",
+    "start": "dotnet run --project Zoo.Api --launch-profile http",
+    "test": "dotnet build \"Zoo.Api/Zoo.Api.csproj\" -c Release",
+    "deploy:ghpages": "npm run build:ghpages && gh-pages -d frontend-react/dist"
   },
   "author": "Jessica Lecker",
   "license": "ISC",
-  "dependencies": {
-    "cors": "^2.8.5",
-    "express": "^5.1.0",
-    "jasmine": "^5.12.0"
-  },
   "devDependencies": {
     "cross-env": "^10.1.0",
-    "gh-pages": "^6.3.0",
-    "nodemon": "^3.1.10",
-    "supertest": "^7.1.4",
-    "vite": "^7.1.12"
+    "gh-pages": "^6.3.0"
   }
 }

@@ -1,4 +1,4 @@
-name: Deploy Angular to Pages
+name: Deploy React to Pages
 
 on:
   push:
@@ -27,17 +27,17 @@ jobs:
           node-version: 22
 
       - name: Install dependencies
-        run: npm install
-        working-directory: frontend-angular
+        run: npm ci
+        working-directory: frontend-react
 
       - name: Build app
         run: npm run build
-        working-directory: frontend-angular
+        working-directory: frontend-react
+        env:
+          GITHUB_PAGES: "true"
 
       - name: Verify build output exists
-        run: |
-          ls -la frontend-angular/dist/frontend-angular
-          ls -la frontend-angular/dist/frontend-angular/browser
+        run: ls -la frontend-react/dist
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
@@ -45,7 +45,7 @@ jobs:
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: frontend-angular/dist/frontend-angular/browser
+          path: frontend-react/dist
 
   deploy:
     environment:
