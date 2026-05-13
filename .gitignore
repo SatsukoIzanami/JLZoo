@@ -11,6 +11,8 @@ pnpm-debug.log*
 package-lock.json
 yarn.lock
 pnpm-lock.yaml
+# Allow lockfile for CI (`npm ci` in GitHub Actions).
+!frontend-react/package-lock.json
 
 # .NET (Zoo.Api)
 Zoo.Api/bin/
