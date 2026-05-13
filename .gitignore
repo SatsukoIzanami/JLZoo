@@ -31,6 +31,8 @@ coverage/
 .env.local
 .env.development
 .env.production
+# Allow committed Vite production defaults (public API URL only; no secrets).
+!frontend-react/.env.production
 
 # System files
 Thumbs.db
